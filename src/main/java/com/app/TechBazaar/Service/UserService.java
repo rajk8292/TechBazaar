@@ -29,28 +29,33 @@ public class UserService {
 	
 	public void saveUserBuyer(UserDTO dto)
 	{
-		Users buyer = new Users();
-		//Data from DTO
-		buyer.setName(dto.getName());
-		buyer.setEmail(dto.getEmail());
-		buyer.setContactNo(dto.getContactNo());
-		buyer.setGender(dto.getGender());
-		buyer.setPassword(dto.getPassword());
-		
-		buyer.setLoginStatus(LoginStatus.INACTIVE);
-		buyer.setUserRole(UserRole.BUYER);
-		buyer.setUserStatus(UserStatus.UNBLOCKED);
-		buyer.setRegDate(LocalDateTime.now());
-		
-		//otp verification and authentication
-		String otp = generateOTP();
-		buyer.setOtp(otp);
-		buyer.setExpiryTime(LocalDateTime.now().plusMinutes(5));
-		buyer.setVerified(false);
-		
-		userRepo.save(buyer);
-		emailService.sendRegistrationOTP(buyer, otp);
-		System.err.println(otp+"OTP for email "+buyer.getEmail());
+		try {
+			Users buyer = new Users();
+			//Data from DTO
+			buyer.setName(dto.getName());
+			buyer.setEmail(dto.getEmail());
+			buyer.setContactNo(dto.getContactNo());
+			buyer.setGender(dto.getGender());
+			buyer.setPassword(dto.getPassword());
+			
+			buyer.setLoginStatus(LoginStatus.INACTIVE);
+			buyer.setUserRole(UserRole.BUYER);
+			buyer.setUserStatus(UserStatus.UNBLOCKED);
+			buyer.setRegDate(LocalDateTime.now());
+			
+			//otp verification and authentication
+			String otp = generateOTP();
+			buyer.setOtp(otp);
+			buyer.setExpiryTime(LocalDateTime.now().plusMinutes(5));
+			buyer.setVerified(false);
+			
+			userRepo.save(buyer);
+			emailService.sendRegistrationOTP(buyer, otp);
+			System.err.println(otp+"OTP for email "+buyer.getEmail());
+		} catch(Exception e) {
+			System.err.println("Error from service : "+e.getMessage());
+			throw new RuntimeException("Something went wrong, please try again later");
+		}
 	}
 	
 	public boolean verifyOTP(String email, String otp) throws Exception
@@ -62,6 +67,16 @@ public class UserService {
 			return true;
 		}
 		return false;
+	}
+	
+	public void ResendOTP(String email)
+	{
+		String otp = generateOTP();
+		Users user =userRepo.findByEmail(email);
+		user.setExpiryTime(LocalDateTime.now().plusMinutes(5));
+		user.setOtp(otp);
+		emailService.sendRegistrationOTP(user, otp);
+		userRepo.save(user);
 	}
 
 }

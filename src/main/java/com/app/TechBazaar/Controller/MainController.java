@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.app.TechBazaar.DTO.UserDTO;
+import com.app.TechBazaar.Model.Users;
+import com.app.TechBazaar.Model.Users.UserRole;
+import com.app.TechBazaar.Model.Users.UserStatus;
 import com.app.TechBazaar.Repository.UserRepository;
 import com.app.TechBazaar.Service.UserService;
 
@@ -29,11 +32,50 @@ public class MainController {
 	{
 		return "index";
 	}
+	
 	@GetMapping("/Login")
-	public String ShowLogin()
+	public String ShowLogin(Model model)
 	{
+		model.addAttribute("dto", new UserDTO());
 		return "Login";
 	}
+	
+	@PostMapping("/Login")
+	public String UserLogin(@ModelAttribute("dto") UserDTO dto, RedirectAttributes attributes, HttpSession session)
+	{
+		try {
+			if(!userRepo.existsByEmailAndIsVerified(dto.getEmail(), true)) {
+				attributes.addFlashAttribute("msg","User not found");
+				return "redirect:/Login";
+			}
+			
+			Users user = userRepo.findByEmail(dto.getEmail());
+			if(!user.getPassword().equals(dto.getPassword())) {
+				attributes.addFlashAttribute("msg", "Invalid user id or Password");
+				return "redirect:/Login";
+			}
+			if(user.getUserStatus().equals(UserStatus.UNBLOCKED)) {
+				if(user.getUserRole().equals(UserRole.ADMIN)) {
+					session.setAttribute("loggedInAdmin", user);
+					return "redirect:/Admin/Dashboard";
+				} else if(user.getUserRole().equals(UserRole.SELLER)) {
+					session.setAttribute("loggedInSeller", user);
+					return "redirect:/Seller/Dashboard";
+				} else if(user.getUserRole().equals(UserRole.BUYER)) {
+					session.setAttribute("loggedInBuyer", user);
+					return "redirect:/Buyer/Dashboard";
+				}
+			} else {
+				attributes.addFlashAttribute("msg", "Login Disabled, Please contact Administration");
+			}
+			
+		} catch(Exception e) {
+			attributes.addFlashAttribute("msg",e.getMessage());
+		}
+		return "redirect:/Login";
+	}
+	
+	
 	@GetMapping("/Orders")
 	public String ShowOrders()
 	{
@@ -69,13 +111,17 @@ public class MainController {
 	}
     
     @PostMapping("/Register")
-    public String Register(@ModelAttribute("dto") UserDTO dto, HttpSession session)
+    public String Register(@ModelAttribute("dto") UserDTO dto, HttpSession session, RedirectAttributes attributes)
     {
     	try {
+    		if(userRepo.existsByEmailAndIsVerified(dto.getEmail(), true)) {
+    			attributes.addFlashAttribute("msg", "User Already Exists");
+    		}
     		userservice.saveUserBuyer(dto);
     		session.setAttribute("email", dto.getEmail());
     		return "redirect:/verify-otp";
     	} catch(Exception e) {
+    		attributes.addFlashAttribute("msg",e.getMessage());
     		return "redirect:Register";
     	}
     }
@@ -98,12 +144,25 @@ public class MainController {
     			return "redirect:/verify-otp";
     		}
     		session.removeAttribute("email");
-    		attributes.addFlashAttribute("msg", "OTP Verification Successfull, Registration Completed");
+    		//attributes.addFlashAttribute("msg", "OTP Verification Successfull, Registration Completed");
     		return "redirect:/Login";
     	} catch(Exception e) {
     		attributes.addFlashAttribute("msg", e.getMessage());
     		return "redirect:/verify-otp";
     	}
+    }
+    
+    @GetMapping("/ResendOTP")
+    public String ResendOTP(HttpSession session, RedirectAttributes attributes)
+    {
+    	try {
+    		String email = (String) session.getAttribute("email");
+    		userservice.ResendOTP(email);
+    	} catch(Exception e) {
+    		attributes.addFlashAttribute("msg",e.getMessage());
+    		
+    	}
+    	return "redirect:/verify-otp";
     }
 
 }
