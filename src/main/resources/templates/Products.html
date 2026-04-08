@@ -1,134 +1,492 @@
-<html th:replace="~{base::layout(~{::main})}">
-  
-  <body>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::main})}">
+
+<body>
     <main>
-    
-    <!-- Hero -->
-    <div class="row mt-5">
-<section class="hero text-center text-white py-5 mb-5">
-    <div class="container">
-        <h1 class="display-4 fw-bold">Our Products</h1>
-        <p class="lead">Premium tech gadgets for every enthusiast</p>
-    </div>
-    </div>
-</section>
+        <style>
+            :root {
+                --primary: #2874f0;
+                --primary-hover: #1656c0;
+                --accent: #ff9f00;
+                --accent-hover: #f39800;
+                --success: #388e3c;
+                --danger: #ff4343;
+                --text-main: #212121;
+                --text-muted: #878787;
+                --bg-light: #f1f3f6;
+                --card-bg: #ffffff;
+                --border-color: #e0e0e0;
+                --radius-lg: 16px;
+                --radius-md: 8px;
+                --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+                --shadow-hover: 0 12px 24px rgba(0, 0, 0, 0.08);
+                --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            }
 
-<!-- Search -->
-<section class="container mb-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <input type="text" class="form-control search-input border border-info" placeholder="Search products...">
-        </div>
-    </div>
-</section>
+            body {
+                background-color: var(--bg-light);
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            }
 
-<!-- Products -->
-<section class="container py-4">
-    <div class="row g-4">
+            .products-page-container {
+                max-width: 1400px;
+                margin: 40px auto;
+                padding: 0 20px;
+            }
 
-        <!-- Product Card -->
-        <div class="col-lg-3 col-md-4 col-sm-6">
-            <div class="product-card">
-                <div class="badge-new">New</div>
-                <div class="product-img-wrapper">
-                    <img src="images/headphone.jpg" alt="Wireless Headphones" class="product-img">
+            /* =========================================
+               PAGE HEADER & CATEGORIES
+            ========================================= */
+            .page-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 25px;
+            }
+
+            .page-title {
+                font-size: 24px;
+                font-weight: 700;
+                color: var(--text-main);
+                margin: 0;
+            }
+
+            .category-nav-wrapper {
+                background: var(--card-bg);
+                padding: 15px 25px;
+                border-radius: var(--radius-lg);
+                box-shadow: var(--shadow-sm);
+                margin-bottom: 30px;
+                border: 1px solid var(--border-color);
+            }
+
+            .category-scroll {
+                display: flex;
+                gap: 12px;
+                overflow-x: auto;
+                scrollbar-width: thin;
+                scrollbar-color: #ccc transparent;
+                padding-bottom: 5px;
+            }
+
+            .category-scroll::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            .category-scroll::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            .category-scroll::-webkit-scrollbar-thumb {
+                background-color: #ccc;
+                border-radius: 20px;
+            }
+
+            .category-pill {
+                white-space: nowrap;
+                padding: 10px 24px;
+                background-color: #f5f7fa;
+                color: #555;
+                border-radius: 30px;
+                font-weight: 600;
+                font-size: 14px;
+                text-decoration: none;
+                transition: var(--transition);
+                border: 1px solid transparent;
+            }
+
+            .category-pill:hover {
+                background-color: #e9ecef;
+                color: var(--text-main);
+            }
+
+            .category-pill.active {
+                background-color: var(--primary);
+                color: white;
+                box-shadow: 0 4px 10px rgba(40, 116, 240, 0.3);
+            }
+
+            /* =========================================
+               PRODUCT GRID
+            ========================================= */
+            .product-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 25px;
+            }
+
+            /* =========================================
+               PRODUCT CARD
+            ========================================= */
+            .product-card {
+                background: var(--card-bg);
+                border-radius: var(--radius-lg);
+                overflow: hidden;
+                border: 1px solid var(--border-color);
+                box-shadow: var(--shadow-sm);
+                transition: var(--transition);
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                position: relative;
+                text-decoration: none;
+            }
+
+            .product-card:hover {
+                transform: translateY(-8px);
+                box-shadow: var(--shadow-hover);
+                border-color: #d0d0d0;
+            }
+
+            .product-link-wrapper {
+                text-decoration: none;
+                color: inherit;
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+            }
+
+            /* Card Badges & Actions Overlay */
+            .card-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                padding: 15px;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                z-index: 2;
+                pointer-events: none;
+            }
+
+            .discount-badge {
+                background-color: #ff3b3b;
+                color: white;
+                font-weight: 700;
+                font-size: 12px;
+                padding: 5px 10px;
+                border-radius: 20px;
+                box-shadow: 0 2px 5px rgba(255, 59, 59, 0.3);
+            }
+
+            .wishlist-btn {
+                background: white;
+                color: #c2c2c2;
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                pointer-events: auto;
+                cursor: pointer;
+                transition: var(--transition);
+                font-size: 18px;
+            }
+
+            .wishlist-btn:hover {
+                color: var(--danger);
+                transform: scale(1.1);
+            }
+
+            .card-img-wrapper {
+                height: 240px;
+                padding: 30px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #fff;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .card-img-wrapper img {
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+                transition: transform 0.5s ease;
+            }
+
+            .product-card:hover .card-img-wrapper img {
+                transform: scale(1.1);
+            }
+
+            .card-body-custom {
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+                background-color: #fafbfc;
+                border-top: 1px solid #f5f5f5;
+            }
+
+            .product-brand {
+                font-size: 12px;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-weight: 600;
+                margin-bottom: 6px;
+            }
+
+            .product-title {
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--text-main);
+                margin: 0 0 10px 0;
+                line-height: 1.4;
+                /* Truncate to 2 lines max */
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                height: 44px;
+            }
+
+            .rating-container {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 12px;
+            }
+
+            .rating-badge-small {
+                background-color: var(--success);
+                color: white;
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-size: 11px;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                gap: 3px;
+            }
+
+            .rating-count {
+                font-size: 12px;
+                color: var(--text-muted);
+            }
+
+            .price-container {
+                display: flex;
+                align-items: baseline;
+                gap: 8px;
+                margin-bottom: 15px;
+                margin-top: auto;
+                /* Push to bottom */
+            }
+
+            .price-final {
+                font-size: 20px;
+                font-weight: 700;
+                color: var(--text-main);
+            }
+
+            .price-mrp {
+                font-size: 14px;
+                color: var(--text-muted);
+                text-decoration: line-through;
+            }
+
+            /* Card Action Area */
+            .card-action-area {
+                padding: 0 20px 20px 20px;
+                background-color: #fafbfc;
+            }
+
+            .btn-view-modern {
+                width: 100%;
+                background-color: #fff;
+                color: var(--primary);
+                border: 1px solid var(--primary);
+                padding: 10px;
+                border-radius: var(--radius-md);
+                font-weight: 600;
+                font-size: 14px;
+                cursor: pointer;
+                transition: var(--transition);
+                text-align: center;
+            }
+
+            .product-card:hover .btn-view-modern {
+                background-color: var(--primary);
+                color: #fff;
+            }
+
+            /* Empty State */
+            .empty-state {
+                text-align: center;
+                padding: 60px 20px;
+                background: white;
+                border-radius: var(--radius-lg);
+                box-shadow: var(--shadow-sm);
+                grid-column: 1 / -1;
+                /* span across all columns */
+            }
+
+            .empty-state i {
+                font-size: 60px;
+                color: #ddd;
+                margin-bottom: 20px;
+            }
+
+            .empty-state h3 {
+                font-size: 22px;
+                color: var(--text-main);
+                margin-bottom: 10px;
+            }
+
+            .empty-state p {
+                color: var(--text-muted);
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .product-grid {
+                    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                    gap: 15px;
+                }
+
+                .card-img-wrapper {
+                    height: 180px;
+                    padding: 20px;
+                }
+
+                .product-title {
+                    font-size: 14px;
+                }
+
+                .price-final {
+                    font-size: 18px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .product-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+
+        <!-- Include FontAwesome for icons -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+        <div class="products-page-container">
+
+            <!-- Category Navigation -->
+            <div class="category-nav-wrapper">
+                <div class="category-scroll">
+                    <a th:href="@{/Products}" class="category-pill"
+                        th:classappend="${selectedCategory == null ? 'active' : ''}">
+                        <i class="fa-solid fa-shapes" style="margin-right: 6px;"></i> All Categories
+                    </a>
+
+                    <a th:href="@{'/Products/' + ${cate.categoryName}}" th:each="cate : ${categories}"
+                        class="category-pill" th:classappend="${cate.categoryName == selectedCategory ? 'active' : ''}">
+                        <span th:text="${cate.categoryName}">Category Name</span>
+                    </a>
                 </div>
-                <h5 class="mt-3">Wireless Headphones</h5>
-                <p class="text-muted">High-quality sound, long battery life</p>
-                <p class="price">₹2,499</p>
-                <a href="#" class="btn btn-buy w-100"><i class="fa fa-shopping-cart me-2"></i>Buy Now</a>
             </div>
+
+            <div class="page-header">
+                <h1 class="page-title" th:if="${selectedCategory == null}">All Products</h1>
+                <h1 class="page-title" th:if="${selectedCategory != null}" th:text="${selectedCategory} + ' Products'">
+                    Category Products</h1>
+
+                <span class="text-muted" th:text="${products.size()} + ' items found'">0 items found</span>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="product-grid">
+
+                <!-- Loop through products -->
+                <div class="product-card" th:each="product : ${products}">
+
+                    <!-- Overlay Badges (Discount & Wishlist) -->
+                    <div class="card-overlay">
+                        <div>
+                            <span class="discount-badge" th:if="${product.discount > 0}"
+                                th:text="${product.discount} + '% OFF'">
+                                10% OFF
+                            </span>
+                        </div>
+                        <div class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                            <i class="fa-regular fa-heart"></i>
+                        </div>
+                    </div>
+
+                    <a th:href="@{/ViewProduct/{name}/{id}(name=${product.productName}, id=${product.id})}"
+                        class="product-link-wrapper">
+
+                        <!-- Image Area -->
+                        <div class="card-img-wrapper">
+                            <img th:src="@{'/ProductImages/' + ${product.productImages[0]}}" alt="Product Image">
+                        </div>
+
+                        <!-- Card Details Area -->
+                        <div class="card-body-custom">
+                            <div class="product-brand" th:text="${product.brandName}">Brand</div>
+                            <h3 class="product-title" th:text="${product.productName}">Product Name Goes Here</h3>
+
+                            <!-- Static Rating for Visual Appeal -->
+                            <div class="rating-container">
+                                <span class="rating-badge-small">
+                                    4.5 <i class="fa-solid fa-star" style="font-size: 8px;"></i>
+                                </span>
+                                <span class="rating-count">(1.2k)</span>
+                            </div>
+
+                            <div class="price-container">
+                                <span class="price-final">₹<span th:text="${product.finalPrice}">Final
+                                        Price</span></span>
+                                <span class="price-mrp" th:if="${product.discount > 0}"
+                                    th:text="'₹' + ${product.pricePerUnit}">MRP</span>
+                            </div>
+                        </div>
+
+                        <!-- Card Action -->
+                        <div class="card-action-area">
+                            <div class="btn-view-modern">View Details</div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Empty State if no products found -->
+                <div th:if="${products.empty}" class="empty-state">
+                    <i class="fa-solid fa-box-open"></i>
+                    <h3>No products found</h3>
+                    <p>We couldn't find any products in this category. Please check back later.</p>
+                    <a href="/Products" class="btn btn-primary mt-3">View All Products</a>
+                </div>
+
+            </div>
+
         </div>
 
-        <div class="col-lg-3 col-md-4 col-sm-6">
-            <div class="product-card">
-                <div class="badge-sale">Sale</div>
-                <div class="product-img-wrapper">
-                    <img src="images/smartwatch.avif" alt="Smart Watch" class="product-img">
-                </div>
-                <h5 class="mt-3">Smart Watch</h5>
-                <p class="text-muted">Track fitness & notifications</p>
-                <p class="price">₹3,999</p>
-                <a href="#" class="btn btn-buy w-100"><i class="fa fa-shopping-cart me-2"></i>Buy Now</a>
-            </div>
-        </div>
+        <script>
+            function toggleWishlist(element, event) {
+                // Prevent navigating to the product page when clicking wishlist
+                event.preventDefault();
+                event.stopPropagation();
 
-        <div class="col-lg-3 col-md-4 col-sm-6">
-            <div class="product-card">
-                <div class="product-img-wrapper">
-                    <img src="images/bluetooth.jpg" alt="Bluetooth Speaker" class="product-img">
-                </div>
-                <h5 class="mt-3">Bluetooth Speaker</h5>
-                <p class="text-muted">Portable, waterproof, high bass</p>
-                <p class="price">₹1,799</p>
-                <a href="#" class="btn btn-buy w-100"><i class="fa fa-shopping-cart me-2"></i>Buy Now</a>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-4 col-sm-6">
-            <div class="product-card">
-                <div class="badge-new">New</div>
-                <div class="product-img-wrapper">
-                    <img src="images/mouse.jpg" alt="Gaming Mouse" class="product-img">
-                </div>
-                <h5 class="mt-3">Gaming Mouse</h5>
-                <p class="text-muted">RGB lighting, ergonomic design</p>
-                <p class="price">₹1,299</p>
-                <a href="#" class="btn btn-buy w-100"><i class="fa fa-shopping-cart me-2"></i>Buy Now</a>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-4 col-sm-6">
-            <div class="product-card">
-                <div class="badge-new">New</div>
-                <div class="product-img-wrapper">
-                    <img src="images/mouse.jpg" alt="Gaming Mouse" class="product-img">
-                </div>
-                <h5 class="mt-3">Gaming Mouse</h5>
-                <p class="text-muted">RGB lighting, ergonomic design</p>
-                <p class="price">₹1,299</p>
-                <a href="#" class="btn btn-buy w-100"><i class="fa fa-shopping-cart me-2"></i>Buy Now</a>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-4 col-sm-6">
-            <div class="product-card">
-                <div class="badge-new">New</div>
-                <div class="product-img-wrapper">
-                    <img src="images/headphone.jpg" alt="Wireless Headphones" class="product-img">
-                </div>
-                <h5 class="mt-3">Wireless Headphones</h5>
-                <p class="text-muted">High-quality sound, long battery life</p>
-                <p class="price">₹2,499</p>
-                <a href="#" class="btn btn-buy w-100"><i class="fa fa-shopping-cart me-2"></i>Buy Now</a>
-            </div>
-        </div>
-       <div class="col-lg-3 col-md-4 col-sm-6">
-            <div class="product-card">
-                <div class="badge-sale">Sale</div>
-                <div class="product-img-wrapper">
-                    <img src="images/smartwatch.avif" alt="Smart Watch" class="product-img">
-                </div>
-                <h5 class="mt-3">Smart Watch</h5>
-                <p class="text-muted">Track fitness & notifications</p>
-                <p class="price">₹3,999</p>
-                <a href="#" class="btn btn-buy w-100"><i class="fa fa-shopping-cart me-2"></i>Buy Now</a>
-            </div>
-        </div>
-       <div class="col-lg-3 col-md-4 col-sm-6">
-            <div class="product-card">
-                <div class="badge-new">New</div>
-                <div class="product-img-wrapper">
-                    <img src="images/headphone.jpg" alt="Wireless Headphones" class="product-img">
-                </div>
-                <h5 class="mt-3">Wireless Headphones</h5>
-                <p class="text-muted">High-quality sound, long battery life</p>
-                <p class="price">₹2,499</p>
-                <a href="#" class="btn btn-buy w-100"><i class="fa fa-shopping-cart me-2"></i>Buy Now</a>
-            </div>
-        </div>
-    </div>
-</section>
-    
+                const icon = element.querySelector('i');
+                if (icon.classList.contains('fa-regular')) {
+                    icon.classList.remove('fa-regular');
+                    icon.classList.add('fa-solid');
+                    element.style.color = 'var(--danger)';
+                    // Animation effect
+                    element.style.transform = 'scale(1.2)';
+                    setTimeout(() => element.style.transform = 'scale(1)', 200);
+                } else {
+                    icon.classList.remove('fa-solid');
+                    icon.classList.add('fa-regular');
+                    element.style.color = '#c2c2c2';
+                }
+            }
+        </script>
     </main>
-    
-  </body>
+</body>
+
 </html>

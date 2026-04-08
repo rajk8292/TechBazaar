@@ -2,442 +2,677 @@
 <html lang="en" th:fragment="layout(content)">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TechBazaar</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
-        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>TechBazaar</title>
+	<!-- Fonts & Icons -->
+	<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+		integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+	<link rel="stylesheet" href="css/services.css">
+	<link rel="stylesheet" href="css/products.css">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/services.css">
-    <link rel="stylesheet" href="css/products.css">
-    <style>
-        .product-scroll-one {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-            border-radius: 10px;
-            padding: 10px 40px;
-            box-sizing: border-box;
-        }
+	<style>
+		:root {
+			--primary: #008ecc;
+			--primary-dark: #0077ab;
+			--secondary: #ff9f00;
+			--bg-light: #f5f7fa;
+			--text-dark: #212529;
+			--text-muted: #6c757d;
+			--white: #ffffff;
+			--shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
+			--shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+			--radius-md: 8px;
+			--radius-lg: 16px;
+			--radius-pill: 50px;
+		}
 
-        .product-scroll {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            scroll-behavior: smooth;
-        }
+		body {
+			font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI",
+				Roboto, sans-serif;
+			background-color: var(--bg-light);
+			color: var(--text-dark);
+			overflow-x: hidden;
+			display: flex;
+			flex-direction: column;
+			min-height: 100vh;
+		}
 
-        .product-scroll::-webkit-scrollbar {
-            display: none;
-        }
+		/* ----- TOP UTILITY BAR ----- */
+		.top-bar {
+			background-color: #ebeef2;
+			font-size: 13px;
+			font-weight: 500;
+			color: var(--text-muted);
+			padding: 8px 0;
+			border-bottom: 1px solid #e1e5eb;
+		}
 
-        .product-scroll {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+		.top-bar .list-unstyled {
+			margin: 0;
+		}
 
-        .product-item {
-            min-width: 200px;
-            flex-shrink: 0;
-            border-radius: 5px;
-            padding: 10px;
-            box-sizing: border-box;
-            text-align: center;
-            border-radius: 50px;
-            border: 1px solid #f3f9fb;
-            background-color: #f3f9fb;
-        }
+		.top-bar li {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+		}
 
-        .scroll-left {
-            left: 5px;
-        }
+		.top-bar i {
+			color: var(--primary);
+			font-size: 14px;
+		}
 
-        .scroll-right {
-            right: 5px;
-        }
+		/* ----- MAIN NAVBAR ----- */
+		.main-navbar {
+			background: var(--white);
+			box-shadow: var(--shadow-sm);
+			padding: 12px 0;
+			position: sticky;
+			top: 0;
+			z-index: 1020;
+		}
 
-        .line {
-            width: 29%;
-            height: 3px;
-            background-color: #008ecc;
-            margin: 5px 0;
-        }
+		.navbar-brand-custom {
+			font-size: 24px;
+			font-weight: 700;
+			color: var(--primary) !important;
+			text-decoration: none;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
 
-        .line1 {
-            width: 18%;
-            height: 3px;
-            background-color: #008ecc;
-            margin: 5px 0;
-        }
+		.navbar-brand-custom span {
+			color: var(--secondary);
+			font-style: italic;
+		}
 
-        .line2 {
-            width: 17%;
-            height: 3px;
-            background-color: #008ecc;
-            margin: 5px 0;
-        }
+		/* Search Bar */
+		.search-group {
+			border-radius: var(--radius-pill);
+			overflow: hidden;
+			box-shadow: 0 0 0 1px #e1e5eb;
+			transition: 0.3s ease;
+		}
 
-        .line3 {
-            width: 10%;
-            height: 3px;
-            background-color: #008ecc;
-            margin: 5px 0;
-        }
+		.search-group:focus-within {
+			box-shadow: 0 0 0 2px var(--primary);
+		}
 
-        .line4 {
-            width: 40%;
-            height: 3px;
-            background-color: white;
-            margin: 5px 0;
-        }
+		.search-group input {
+			border: none;
+			padding: 12px 20px;
+			font-size: 14px;
+			box-shadow: none !important;
+			background: #f8f9fa;
+		}
 
-        .line5 {
-            width: 53%;
-            height: 3px;
-            background-color: white;
-            margin: 5px 0;
-        }
+		.search-group .input-group-text {
+			background: #f8f9fa;
+			border: none;
+			color: var(--text-muted);
+			padding: 0 16px;
+		}
 
-        .product-item:hover {
-            background-color: #008ecc;
-        }
+		/* Nav Actions */
+		.nav-actions {
+			display: flex;
+			align-items: center;
+			justify-content: flex-end;
+			gap: 25px;
+			margin: 0;
+			list-style: none;
+		}
 
-        .text-blue {
-            color: #008ecc;
-        }
+		.nav-item-custom {
+			font-weight: 600;
+			font-size: 15px;
+			color: var(--text-dark);
+			text-decoration: none;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			transition: 0.2s;
+		}
 
-        .deal-img {
-            height: 130px;
+		.nav-item-custom:hover,
+		.nav-item-custom:hover i {
+			color: var(--primary);
+		}
 
-        }
+		.nav-item-custom i {
+			font-size: 22px;
+			color: var(--primary);
+			transition: 0.2s;
+		}
 
-        .card:hover {
-            border-color: #008ecc;
-        }
+		/* Cart Badge */
+		.cart-badge {
+			position: absolute;
+			top: -8px;
+			right: -10px;
+			background: #ff4757;
+			color: white;
+			font-size: 11px;
+			padding: 3px 6px;
+			border-radius: 50px;
+			font-weight: 700;
+			border: 2px solid white;
+		}
 
-        .card {
-            transition: 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .categories {
-            width: 165px;
-            height: 165px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background-color: white;
-            transition: transform 0.3s ease, border 0.3s ease;
-        }
-
-        .categories:hover {
-            border: 2px solid #008ecc;
-            transform: scale(1.1);
-        }
-
-        .top-brand {
-            width: 165px;
-            height: 165px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: white;
-            border-radius: 12px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border 0.3s ease;
-        }
-
-        .top-brand:hover {
-            border: 1px solid #008ecc;
-            transform: scale(1.1) translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 142, 204, 0.3);
-        }
+		/* ----- SIDEBAR MENU ----- */
+		#techMenu {
+			position: absolute;
+			top: calc(100% + 15px);
+			left: 0;
+			width: 250px;
+			background: white;
+			border-radius: var(--radius-md);
+			box-shadow: var(--shadow-md);
+			z-index: 1050;
+			display: none;
+			overflow: hidden;
+			animation: fadeIn 0.3s ease;
+			border: 1px solid #f1f1f1;
+		}
 
 
-        .mob {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-        }
+		@keyframes fadeIn {
+			from {
+				opacity: 0;
+				transform: translateY(-10px);
+			}
 
-        .col-auto:hover {
-            border-color: #008ecc;
-        }
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
 
-        .carousel-control-prev,
-        .carousel-control-next {
-            width: 55px;
-            height: 55px;
-            background-color: white;
-            border-radius: 50%;
-            top: 50%;
-            transform: translateY(-50%);
-            opacity: 1;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: 0.3s;
-        }
+		}
 
-        .carousel-control-prev:hover,
-        .carousel-control-next:hover {
-            background-color: #008ecc;
-        }
+		.menu-btn {
+			background: transparent;
+			border: 1px solid #e1e5eb;
+			border-radius: 6px;
+			padding: 8px 14px;
+			color: var(--primary);
+			transition: 0.2s;
+		}
 
-        .carousel-control-prev-icon,
-        .carousel-control-next-icon {
-            filter: invert(1);
-        }
+		.menu-btn:hover {
+			background: var(--bg-light);
+			border-color: var(--primary);
+		}
 
-        :root {
-            --primary: #008ecc;
-        }
+		.menu-header {
+			background: var(--primary);
+			color: white;
+			padding: 18px 20px;
+			font-weight: 600;
+			font-size: 16px;
+		}
 
-        /* White Background */
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #ffffff;
-            overflow-x: hidden;
-        }
+		.menu-link {
+			display: block;
+			padding: 14px 20px;
+			color: var(--text-dark);
+			text-decoration: none;
+			font-weight: 500;
+			border-bottom: 1px solid #f1f1f1;
+			transition: 0.2s;
+		}
 
-        /* Section Spacing */
-        section {
-            padding: 80px 0;
-        }
+		.menu-link:hover {
+			color: var(--primary);
+			background: #f8f9fa;
+			padding-left: 25px;
+		}
 
-        /* Glass Card (for white background) */
-        .glass-card {
-            background: rgba(0, 142, 204, 0.08);
-            /* Light blue tint */
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid rgba(0, 142, 204, 0.2);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-            transition: 0.4s ease;
-        }
+		.menu-link i {
+			width: 22px;
+			color: var(--text-muted);
+			margin-right: 10px;
+			text-align: center;
+		}
 
-        .glass-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0, 142, 204, 0.2);
-        }
+		/* User Dropdown enhancements */
+		.dropdown-menu {
+			border: none;
+			box-shadow: var(--shadow-md);
+			border-radius: var(--radius-md);
+			padding: 10px 0;
+			margin-top: 15px;
+			animation: fadeIn 0.2s ease;
+		}
 
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, #008ecc, #00bfff);
-            color: white;
-            padding: 120px 0;
-        }
+		.dropdown-item {
+			padding: 10px 20px;
+			font-weight: 500;
+			font-size: 14px;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
 
-        /* Section Titles */
-        .section-title {
-            font-weight: 700;
-            color: var(--primary);
-        }
+		.dropdown-item i {
+			color: var(--primary);
+			width: 18px;
+			text-align: center;
+		}
 
-        /* Icons */
-        .icon-style {
-            font-size: 40px;
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
+		.dropdown-item:hover {
+			background: #f8f9fa;
+			color: var(--primary);
+		}
 
-        /* Team Image */
-        .team-img {
-            height: 250px;
-            object-fit: cover;
-            border-radius: 20px 20px 0 0;
-        }
+		/* Main Area */
+		.main {
+			flex-grow: 1;
+		}
 
-        /* Button */
-        .btn-custom {
-            background: var(--primary);
-            color: white;
-            font-weight: 600;
-            border-radius: 50px;
-            padding: 10px 25px;
-            border: none;
-        }
+		/* ----- FOOTER ----- */
+		.footer-main {
+			background: #001f3f;
+			/* Deep professional navy */
+			color: rgba(255, 255, 255, 0.85);
+			padding: 60px 0 20px;
+			text-align: left;
+		}
 
-        .btn-custom:hover {
-            background: #007bb5;
-        }
-    </style>
+		.footer-main h4 {
+			color: white;
+			font-weight: 600;
+			font-size: 18px;
+			margin-bottom: 12px;
+		}
+
+		.footer-line {
+			width: 60px;
+			height: 3px;
+			background: var(--primary);
+			margin-bottom: 20px;
+			border-radius: 2px;
+		}
+
+		.footer-main ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+
+		.footer-main ul li {
+			margin-bottom: 12px;
+		}
+
+		.footer-main ul li a {
+			color: rgba(255, 255, 255, 0.85);
+			text-decoration: none;
+			transition: 0.3s;
+			font-size: 15px;
+		}
+
+		.footer-main ul li a:hover {
+			color: var(--primary);
+			padding-left: 5px;
+		}
+
+		.contact-method {
+			display: flex;
+			align-items: flex-start;
+			gap: 12px;
+			margin-bottom: 18px;
+			font-size: 15px;
+		}
+
+		.contact-method i {
+			font-size: 20px;
+			color: var(--primary);
+			padding-top: 3px;
+		}
+
+		.contact-method strong {
+			display: block;
+			font-size: 18px;
+			color: white;
+			line-height: 1.4;
+		}
+
+		.footer-bottom {
+			border-top: 1px solid rgba(255, 255, 255, 0.1);
+			padding-top: 20px;
+			margin-top: 50px;
+			font-size: 14px;
+			text-align: center;
+			color: rgba(255, 255, 255, 0.6);
+		}
+
+		/* Responsive */
+		@media (max-width : 991px) {
+			.nav-actions {
+				justify-content: flex-start;
+				margin-top: 15px;
+			}
+		}
+
+		.feedback-card {
+			max-width: 500px;
+			margin: 50px auto;
+			border-radius: 20px;
+			background: #ffffff;
+			box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+			transition: 0.3s ease-in-out;
+		}
+
+		.feedback-card:hover {
+			transform: translateY(-5px);
+		}
+
+		/* ⭐ Star Rating */
+		.star-rating {
+			direction: rtl;
+			display: inline-flex;
+			gap: 8px;
+		}
+
+		.star-rating input {
+			display: none;
+		}
+
+		.star-rating label {
+			font-size: 30px;
+			color: #ccc;
+			cursor: pointer;
+			transition: 0.3s;
+		}
+
+		.star-rating label:hover,
+		.star-rating label:hover~label {
+			color: #ffc107;
+			transform: scale(1.2);
+		}
+
+		.star-rating input:checked~label {
+			color: #ffc107;
+		}
+
+		/* Textarea */
+		textarea.form-control {
+			border-radius: 12px;
+			padding: 10px;
+			resize: none;
+			transition: 0.3s;
+		}
+
+		textarea.form-control:focus {
+			border-color: #0d6efd;
+			box-shadow: 0 0 8px rgba(13, 110, 253, 0.3);
+		}
+
+		/* File Input */
+		input[type="file"] {
+			border-radius: 10px;
+		}
+
+		/* Image Preview */
+		.preview-img {
+			width: 100%;
+			max-height: 200px;
+			object-fit: cover;
+			border-radius: 12px;
+			margin-top: 10px;
+			display: none;
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+		}
+
+		/* Button */
+		.btn-success {
+			border-radius: 25px;
+			padding: 8px 30px;
+			font-weight: 600;
+			transition: 0.3s;
+		}
+
+		.btn-success:hover {
+			background-color: #198754;
+			transform: scale(1.05);
+			box-shadow: 0 5px 15px rgba(25, 135, 84, 0.3);
+		}
+
+		h4 {
+			font-weight: 600;
+		}
+	</style>
 </head>
 
 <body>
-    <div class="container-fluid">
-        <div class="row" style="background-color: #f5f5f5;">
-            <div class="col-sm-4">
-                <h6 class="text-center p-2">Welcome to TechBazaar</h6>
-            </div>
-            <div class="col-sm-2"></div>
-            <div class="col-sm-6">
-                <ul class="list-unstyled d-flex justify-content-evenly m-2">
-                    <li><i class="fa-solid fa-location-dot text-blue"></i>Deliver to 226301 </li>
-                    <li><i class="fa-solid fa-truck-fast text-blue"></i>Track Your Status</li>
-                    <li><i class="fa-solid fa-tags text-blue"></i>All Offers </li>
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-11 mx-auto">
-                <div class="row">
-                    <div class="col-sm-3">
-                        <div class="d-flex align-items-center p-3" style="width: max-content; position: relative;">
-                            <button class="btn btn-outline-primary btn-sm me-2" type="button" id="menuBtn">
-                                <i class="fa-solid fa-bars"></i>
-                            </button>
-                            <h4 class="text-primary mb-0">TechBazaar</h4>
-                        </div>
-                        <div class="collapse position-absolute" id="techMenu" style="z-index: 1000;">
 
-                            <div class="card card-body p-2" style="width: 200px;">
-                                <a href="/" class="btn btn-primary btn-sm w-100 mb-1">Home</a>
-                                <a href="/Orders" class="btn btn-primary btn-sm w-100 mb-1">Orders</a>
-                                <a href="/Products" class="btn btn-primary btn-sm w-100 mb-1">Products</a>
-                                <a href="/Services" class="btn btn-primary btn-sm w-100 mb-1">Services</a>
-                                <a href="/AboutUs" class="btn btn-primary btn-sm w-100 mb-1">AboutUS</a>
-                                <a href="/ContactUs" class="btn btn-primary btn-sm w-100 mb-1">ContactUs</a>
-                            </div>
-                        </div>
+	<!-- Top Utility Bar -->
+	<div class="top-bar d-none d-md-block">
+		<div class="container-fluid px-4 px-lg-5">
+			<div class="row align-items-center">
+				<div class="col-md-5">
+					<span class="mb-0">Welcome to TechBazaar - India's Premium
+						Store</span>
+				</div>
+				<div class="col-md-7 d-flex justify-content-end">
+					<ul class="list-unstyled d-flex gap-4">
+						<li><i class="fa-solid fa-location-dot"></i> Deliver to
+							226301</li>
+						<li><i class="fa-solid fa-truck-fast"></i> Track Your Status</li>
+						<li><i class="fa-solid fa-tags"></i> All Offers</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
 
+	<!-- Main Navbar -->
+	<header class="main-navbar">
+		<div class="container-fluid px-4 px-lg-5">
+			<div class="row align-items-center">
 
-                    </div>
-                    <div class="col-sm-6 p-3">
-                        <form class="d-flex mx-auto my-2 my-lg-0 w-100">
-                            <div class="input-group search-group">
-                                <span class="input-group-text bg-white border-primary">
-                                    <i class="fa-solid fa-magnifying-glass text-blue"></i>
-                                </span>
-                                <input type="search" class="form-control border-primary border-start-0 border-end-0"
-                                    placeholder="Search laptops, mobiles, headphones...">
-                                <span class="input-group-text bg-white border-primary">
-                                    <i class="fa-solid fa-bars text-blue"></i>
-                                </span>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="col-sm-3 p-3">
-                        <ul class="list-unstyled  d-flex justify-content-evenly">
-                            <li> <a th:if="${session.LoggedInUser == null}" href="/Login"
-                                    class="text-decoration-none text-dark"><i
-                                        class="fa-solid fa-circle-user text-blue"></i>Sign Up / Sign In </a></li>
-                            <li> <a th:if="${session.LoggedInUser != null}" href="#"
-                                    class="text-decoration-none text-dark"><i
-                                        class="fa-solid fa-circle-user text-blue"></i>Profile</a></li>
-                            <li><i class="fa-solid fa-cart-arrow-down text-blue"></i>Cart</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-11 mx-auto">
-                <div class="product-scroll-one">
-                    <div class="product-scroll" id="productScroll">
-                        <button class="btn  product-item">Mobiles</button>
-                        <button class="btn  product-item">Laptops</button>
-                        <button class="btn  product-item">Cooler</button>
-                        <button class="btn  product-item">Irons</button>
-                        <button class="btn  product-item">Lights</button>
-                        <button class="btn  product-item">Wires</button>
-                        <button class="btn  product-item">Mobiles</button>
-                        <button class="btn  product-item">Irons</button>
+				<!-- Logo & Menu -->
+				<div class="col-12 col-lg-3 d-flex align-items-center gap-3 mb-3 mb-lg-0">
+					<div class="position-relative">
+						<button class="menu-btn" type="button" id="menuBtn">
+							<i class="fa-solid fa-bars"></i>
+						</button>
+						<!-- Sidebar Menu -->
+						<div id="techMenu" class="tech-sidebar shadow">
+							<div class="menu-header">
+								<i class="fa-regular fa-compass me-2"></i> Explore
+							</div>
+							<div class="py-2">
+								<a href="/" class="menu-link"><i class="fa-solid fa-house"></i>
+									Home</a> <a href="/Products" class="menu-link"><i class="fa-solid fa-box-open"></i>
+									Products</a> <a href="/Orders" class="menu-link"><i
+										class="fa-solid fa-clipboard-list"></i>
+									My Orders</a> <a href="/Services" class="menu-link"><i
+										class="fa-solid fa-wrench"></i> Services</a> <a href="/AboutUs"
+									class="menu-link"><i class="fa-solid fa-address-card"></i>
+									About Us</a> <a href="/ContactUs" class="menu-link"><i
+										class="fa-solid fa-headset"></i> Contact Us</a>
+							</div>
+						</div>
+					</div>
+					<a href="/" class="navbar-brand-custom"> Tech<span>Bazaar</span>
+					</a>
+				</div>
 
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Main content From other Pages -->
-        <div class="main" th:replace="${content}">
+				<!-- Search -->
+				<div class="col-12 col-lg-5 order-3 order-lg-2 mt-2 mt-lg-0">
+					<form class="m-0">
+						<div class="input-group search-group">
+							<span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span> <input
+								type="search" class="form-control" placeholder="Search laptops, mobiles, headphones...">
+							<button type="submit" class="btn btn-primary px-4"
+								style="border-radius: 0 50px 50px 0; font-weight: 500;">Search</button>
+						</div>
+					</form>
+				</div>
 
-        </div>
-        <!-- Main end -->
-        <!--footer start-->
-        <div class="row text-white" style="background-color: #008ecc;">
-            <div class="col-sm-11 mx-auto mt-4">
-                <div class="row">
-                    <div class="col-sm-4">
-                        <h4>TechBazaar</h4>
-                        <p class="m-0">Contact US</p>
-                        <p class="m-0"><i class="fa-brands fa-whatsapp"></i>Whats App</p>
-                        <span>+91 8292557892</span>
-                        <p class="m-0"><i class="fa-solid fa-phone"></i>Call Us</p>
-                        <span>+91 8292557892</span>
-                    </div>
-                    <div class="col-sm-4">
-                        <h4>Most Popular Categories</h4>
-                        <div class="line5"></div>
-                        <ul>
-                            <li>Mobile</li>
-                            <li>Laptops</li>
-                            <li>Cooler</li>
-                            <li>Headsphones</li>
-                            <li>Freeze</li>
-                            <li>Lights</li>
-                            <li>Wires</li>
-                            <li>Irons</li>
-                        </ul>
-                    </div>
-                    <div class="col-sm-4">
-                        <h4>Customer Services</h4>
-                        <div class="line4"></div>
-                        <ul>
-                            <li>About US</li>
-                            <li>Terms & Conditions</li>
-                            <li>FAQ</li>
-                            <li>Privacy Policy</li>
-                            <li>Cancel & Return Policy</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <hr>
-                    <p class="text-center">2026 All rights reserverd.TechBazaar</p>
-                </div>
-            </div>
-        </div>
-        <!--footer end-->
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-        crossorigin="anonymous"></script>
-    <script>
-        const menuBtn = document.getElementById('menuBtn');
-        const techMenu = document.getElementById('techMenu');
+				<!-- Actions -->
+				<div class="col-12 col-lg-4 order-2 order-lg-3 d-flex justify-content-lg-end mt-2 mt-lg-0">
+					<ul class="nav-actions w-100 justify-content-between justify-content-lg-end">
 
-        menuBtn.addEventListener('click', () => {
-            const rect = menuBtn.getBoundingClientRect();
-            techMenu.style.top = rect.bottom + 'px'; // niche khule
-            techMenu.style.left = rect.left + 'px';  // left align
-            const bsCollapse = new bootstrap.Collapse(techMenu, {
-                toggle: true
-            });
-        });
-        // Scroll fade-in animation for service cards
-        const cards = document.querySelectorAll('.service-card');
+						<!-- Guest -->
+						<li th:if="${session.loggedInUser == null}"><a href="/Login" class="nav-item-custom"> <i
+									class="fa-regular fa-user"></i> <span>Sign
+									In</span>
+							</a></li>
 
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = 1;
-                    entry.target.style.transform = 'translateY(0)';
-                    entry.target.style.transition = 'all 0.6s ease-out';
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.2 });
+						<!-- Logged In Profile -->
+						<li class="dropdown" th:if="${session.loggedInUser != null}">
+							<a href="#" class="nav-item-custom dropdown-toggle border-0 bg-transparent p-0"
+								data-bs-toggle="dropdown" aria-expanded="false"> <i
+									class="fa-regular fa-circle-user"></i> <span>Profile</span>
+							</a>
+							<ul class="dropdown-menu dropdown-menu-end">
+								<li><a class="dropdown-item" href="/User/Profile"><i class="fa-regular fa-id-badge"></i>
+										View Profile</a></li>
+								<li><a class="dropdown-item" href="/User/ManageAddress"><i
+											class="fa-solid fa-map-pin"></i> Addresses</a></li>
+								<li><a class="dropdown-item" href="/User/ChangePassword"><i class="fa-solid fa-key"></i>
+										Passwords</a></li>
+								<li>
+									<hr class="dropdown-divider">
+								</li>
+								<li><a class="dropdown-item text-danger fw-bold" href="/logout"><i
+											class="fa-solid fa-arrow-right-from-bracket text-danger"></i>
+										Logout</a></li>
+							</ul>
+						</li>
 
-        cards.forEach(card => observer.observe(card));
+						<!-- Cart -->
+						<li><a href="/ViewCart" class="nav-item-custom"> <span class="position-relative"> <i
+										class="fa-solid fa-cart-shopping"></i> <span class="cart-badge"
+										th:text="${cartItemCount}" id="cartItemCount">0</span>
+								</span> <span>Cart</span>
+							</a></li>
 
-    </script>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<!-- Main Content -->
+	<div class="main" th:insert="${content}"></div>
+
+	<!-- Enhanced Footer -->
+	<footer class="footer-main">
+		<div class="container-fluid px-4 px-lg-5">
+			<div class="row g-4">
+
+				<div class="col-lg-3 col-md-6 mb-4 contact-info">
+					<h4 class="mb-3" style="font-size: 24px; color: var(--primary);">
+						Tech<span style="color: var(--secondary); font-style: italic;">Bazaar</span>
+					</h4>
+					<p class="mb-4 text-white-50" style="font-size: 14px;">Your
+						premier destination for smart electronics, secure payments, and
+						reliable delivery right to your door.</p>
+
+					<div class="contact-method" style="margin-bottom: 12px;">
+						<i class="fa-brands fa-whatsapp"></i> <span>WhatsApp
+							Support <strong style="font-size: 16px;">+91 8292557892</strong>
+						</span>
+					</div>
+					<div class="contact-method">
+						<i class="fa-solid fa-phone-volume"></i> <span>Call
+							Assistance <strong style="font-size: 16px;">+91 8292557892</strong>
+						</span>
+					</div>
+				</div>
+
+				<div class="col-lg-3 col-md-6 mb-4">
+					<h4>Quick Links</h4>
+					<div class="footer-line"></div>
+					<ul>
+						<li><a href="/Products">Shop Products</a></li>
+						<li><a href="/ViewCart">My Cart</a></li>
+						<li><a href="/Orders">Track Orders</a></li>
+						<li><a href="/ContactUs">Contact Support</a></li>
+						<li><a href="/Services">Our Services</a></li>
+					</ul>
+				</div>
+
+				<div class="col-lg-3 col-md-6 mb-4">
+					<h4>Categories</h4>
+					<div class="footer-line"></div>
+					<ul>
+						<li><a href="#">Mobile Phones</a></li>
+						<li><a href="#">Laptops & PCs</a></li>
+						<li><a href="#">Air Coolers</a></li>
+						<li><a href="#">Headphones</a></li>
+						<li><a href="#">Refrigerators</a></li>
+					</ul>
+				</div>
+
+				<div class="col-lg-3 col-md-6 mb-4">
+					<h4>Customer Services</h4>
+					<div class="footer-line"></div>
+					<ul>
+						<li><a href="/AboutUs">Discover About Us</a></li>
+						<li><a href="#">Our Terms & Conditions</a></li>
+						<li><a href="#">Frequently Asked Questions</a></li>
+						<li><a href="#">Privacy Policy</a></li>
+						<li><a href="#">Cancellation & Returns</a></li>
+					</ul>
+				</div>
+
+			</div>
+			<div class="footer-bottom mt-4">&copy; 2026 All rights reserved. TechBazaar.</div>
+		</div>
+	</footer>
+
+	<!-- Scripts -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+		crossorigin="anonymous"></script>
+	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+	<script type="text/javascript" src="/js/main.js"></script>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			const menuBtn = document.getElementById('menuBtn');
+			const techMenu = document.getElementById('techMenu');
+
+			menuBtn.addEventListener('click', (e) => {
+				e.stopPropagation();
+				if (techMenu.style.display === 'block') {
+					techMenu.style.display = 'none';
+				} else {
+					techMenu.style.display = 'block';
+				}
+			});
+
+			document.addEventListener('click', (e) => {
+				if (!techMenu.contains(e.target) && e.target !== menuBtn) {
+					techMenu.style.display = 'none';
+				}
+			});
+
+			// Re-apply observer if service cards exist
+			const cards = document.querySelectorAll('.service-card');
+			const observer = new IntersectionObserver(entries => {
+				entries.forEach(entry => {
+					if (entry.isIntersecting) {
+						entry.target.style.opacity = 1;
+						entry.target.style.transform = 'translateY(0)';
+						entry.target.style.transition = 'all 0.6s ease-out';
+						observer.unobserve(entry.target);
+					}
+				});
+			}, { threshold: 0.2 });
+
+			cards.forEach(card => observer.observe(card));
+		});
+	</script>
 </body>
 
 </html>

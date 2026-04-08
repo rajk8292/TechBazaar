@@ -1,11 +1,359 @@
-<html th:replace="~{base::layout(~{::main})}">
-  
-  <body>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::main})}">
+
+<body>
+
     <main>
-    <div class="row">
-    <h1 class="bg-danger">This is Contact Us page</h1>
-    </div>
+
+        <style>
+            /* Global Styles & Variables */
+            :root {
+                --primary: #008ecc;
+                --primary-dark: #007bb5;
+                --gray-light: #f8fafc;
+                --text-dark: #1e293b;
+                --text-muted: #64748b;
+            }
+
+            /* Section 1: Hero Section */
+            .contact-hero {
+                background: linear-gradient(135deg, rgba(0, 142, 204, 0.9), rgba(0, 191, 255, 0.85)), url('https://images.unsplash.com/photo-1516321497487-e288fb19713f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') center/cover no-repeat;
+                color: white;
+                padding: 100px 0;
+                text-align: center;
+            }
+
+            .contact-hero h1 {
+                font-size: 3.5rem;
+                font-weight: 800;
+                margin-bottom: 20px;
+                letter-spacing: -1px;
+            }
+
+            .contact-hero p {
+                font-size: 1.25rem;
+                opacity: 0.95;
+                max-width: 650px;
+                margin: 0 auto;
+                line-height: 1.6;
+            }
+
+            /* Section 2: Info Cards */
+            .info-cards-section {
+                padding: 60px 0;
+                background-color: #ffffff;
+                position: relative;
+                margin-top: -60px;
+            }
+
+            .info-card {
+                background: #ffffff;
+                border-radius: 16px;
+                padding: 40px 30px;
+                text-align: center;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                height: 100%;
+                border: 1px solid rgba(0, 0, 0, 0.02);
+            }
+
+            .info-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+            }
+
+            .info-icon-wrapper {
+                width: 80px;
+                height: 80px;
+                background: rgba(0, 142, 204, 0.1);
+                color: var(--primary);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 32px;
+                margin: 0 auto 25px auto;
+                transition: background 0.3s, color 0.3s;
+            }
+
+            .info-card:hover .info-icon-wrapper {
+                background: var(--primary);
+                color: white;
+            }
+
+            .info-card h4 {
+                font-size: 1.25rem;
+                font-weight: 700;
+                margin-bottom: 12px;
+                color: var(--text-dark);
+            }
+
+            .info-card p {
+                color: var(--text-muted);
+                margin: 0;
+                font-size: 1rem;
+                line-height: 1.6;
+            }
+
+            /* Section 3: Contact Form */
+            .form-section {
+                padding: 80px 0;
+                background-color: var(--gray-light);
+            }
+
+            .form-container {
+                background: #ffffff;
+                border-radius: 20px;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+                overflow: hidden;
+            }
+
+            .form-content {
+                padding: 60px;
+            }
+
+            .form-header {
+                margin-bottom: 35px;
+            }
+
+            .form-header h2 {
+                font-weight: 800;
+                color: var(--text-dark);
+                margin-bottom: 10px;
+                font-size: 2.2rem;
+            }
+
+            .form-header p {
+                color: var(--text-muted);
+                font-size: 1.1rem;
+            }
+
+            .form-control {
+                border-radius: 10px;
+                padding: 14px 18px;
+                border: 2px solid #f1f5f9;
+                background-color: #f8fafc;
+                font-size: 1rem;
+                transition: border-color 0.3s, box-shadow 0.3s;
+            }
+
+            .form-control:focus {
+                border-color: var(--primary);
+                background-color: #fff;
+                box-shadow: 0 0 0 4px rgba(0, 142, 204, 0.1);
+            }
+
+            .form-label {
+                letter-spacing: 0.5px;
+            }
+
+            .btn-send {
+                background: var(--primary);
+                color: white;
+                border-radius: 10px;
+                padding: 15px 30px;
+                font-weight: 700;
+                transition: all 0.3s;
+                border: none;
+                font-size: 1.1rem;
+            }
+
+            .btn-send:hover {
+                background: var(--primary-dark);
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px rgba(0, 142, 204, 0.3);
+                color: white;
+            }
+
+            .form-image {
+                background: linear-gradient(135deg, rgba(15, 23, 42, 0.7), rgba(0, 142, 204, 0.8)), url('https://images.unsplash.com/photo-1596524430615-b46475ddff6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80') center/cover;
+                height: 100%;
+                min-height: 400px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                padding: 50px;
+            }
+
+            .form-image-content {
+                text-align: center;
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(10px);
+                padding: 40px;
+                border-radius: 20px;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            .form-image-content h3 {
+                font-weight: bold;
+                font-size: 2.2rem;
+                margin-bottom: 20px;
+            }
+
+            .form-image-content p {
+                font-size: 1.1rem;
+                opacity: 0.9;
+            }
+
+            /* Section 4: Map Section */
+            .map-section {
+                padding: 0;
+                line-height: 0;
+            }
+
+            .map-section iframe {
+                width: 100%;
+                height: 500px;
+                border: 0;
+                filter: grayscale(10%) contrast(1.05);
+            }
+
+            @media (max-width: 991px) {
+                .form-content {
+                    padding: 40px 30px;
+                }
+
+                .info-cards-section {
+                    margin-top: 20px;
+                }
+
+                .contact-hero {
+                    padding: 80px 0;
+                }
+            }
+        </style>
+
+        <!-- SECTION 1: HERO OVERVIEW -->
+        <section class="contact-hero">
+            <div class="container">
+                <h1>Get in Touch</h1>
+                <p>Have questions, suggestions, or just want to say hi? We're always here to listen and help our
+                    customers build the future.</p>
+            </div>
+        </section>
+
+        <!-- SECTION 2: INFO CARDS -->
+        <section class="info-cards-section">
+            <div class="container">
+                <div class="row g-4 justify-content-center">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="info-card">
+                            <div class="info-icon-wrapper">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </div>
+                            <h4>Our Headquarters</h4>
+                            <p>TechBazaar Hub<br>Lucknow, Uttar Pradesh, India</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="info-card">
+                            <div class="info-icon-wrapper">
+                                <i class="fa-solid fa-phone"></i>
+                            </div>
+                            <h4>Call Us</h4>
+                            <p>+91 8292557892<br>Mon-Fri, 9:00 AM - 6:00 PM</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="info-card">
+                            <div class="info-icon-wrapper">
+                                <i class="fa-solid fa-envelope"></i>
+                            </div>
+                            <h4>Email Support</h4>
+                            <p>support@techbazaar.com<br>info@techbazaar.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONTACT FORM -->
+        <section class="form-section">
+            <div class="container">
+                <div class="form-container">
+                    <div class="row g-0">
+                        <!-- Left Side: Image / Text banner -->
+                        <div class="col-lg-5 d-none d-lg-block">
+                            <div class="form-image">
+                                <div class="form-image-content">
+                                    <h3>Let's talk about your needs</h3>
+                                    <p>Fill out the form and our expert team will get back to you within 24 hours.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Side: Form -->
+                        <div class="col-lg-7">
+                            <div class="form-content">
+                                <div class="form-header">
+                                    <h2>Send us a Message</h2>
+                                    <p>Ready to speak with us? We'd love to hear from you!</p>
+                                </div>
+
+                                <!-- Success Message -->
+                                <div th:if="${msg}" class="alert alert-success alert-dismissible fade show shadow-sm"
+                                    role="alert">
+                                    <i class="fa-solid fa-circle-check me-2"></i>
+                                    <span th:text="${msg}"></span>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+
+                                <!-- FORM START -->
+                                <form th:action="@{/ContactUs}" method="post" th:object="${dto}">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <label class="form-label text-muted small fw-bold">FULL NAME</label>
+                                            <input type="text" class="form-control" th:field="*{name}"
+                                                placeholder="Enter Your Name" required>
+                                        </div>
+
+                                        <div class="col-md-6 mb-4">
+                                            <label class="form-label text-muted small fw-bold">CONTACT NUMBER</label>
+                                            <input type="tel" class="form-control" th:field="*{contactNo}"
+                                                placeholder="+91 00000 00000" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label text-muted small fw-bold">EMAIL ADDRESS</label>
+                                        <input type="email" class="form-control" th:field="*{email}"
+                                            placeholder="name@example.com" required>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label text-muted small fw-bold">SUBJECT</label>
+                                        <input type="text" class="form-control" th:field="*{title}"
+                                            placeholder="How can we help you?" required>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label text-muted small fw-bold">MESSAGE</label>
+                                        <textarea class="form-control" rows="5" th:field="*{message}"
+                                            placeholder="Write your detailed message here..." required></textarea>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-send w-100 mt-2">
+                                        Send Message <i class="fa-solid fa-paper-plane ms-2"></i>
+                                    </button>
+                                </form>
+                                <!-- FORM END -->
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: MAP SECTION -->
+        <section class="map-section">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.019123456789!2d77.1025!3d28.7041!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d1a2b3c4d5e6f%3A0x123456789abcdef!2sTechBazaar%20Office!5e0!3m2!1sen!2sin!4v1708790000000"
+                allowfullscreen="" loading="lazy"></iframe>
+        </section>
+
     </main>
-    
-  </body>
+</body>
+
 </html>

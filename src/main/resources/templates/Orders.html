@@ -1,11 +1,239 @@
 <html th:replace="~{base::layout(~{::main})}">
-  
-  <body>
-    <main>
-    <div class="row">
-    <h1 class="bg-danger">This is Orders page page</h1>
-    </div>
-    </main>
-    
-  </body>
+<body>
+
+	<main>
+
+		<style>
+body {
+	background: #f1f3f6;
+	font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Container */
+.orders-container {
+	max-width: 1050px;
+	margin: 30px auto;
+	padding: 10px;
+}
+
+/* Header */
+.order-header {
+	background: white;
+	padding: 20px 25px;
+	border-radius: 12px;
+	margin-bottom: 20px;
+	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Card */
+.order-card {
+	background: white;
+	border-radius: 12px;
+	padding: 18px;
+	margin-bottom: 18px;
+	text-decoration: none;
+	color: inherit;
+	display: block;
+	transition: 0.3s;
+	border-left: 6px solid #ccc;
+}
+
+.order-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* Dynamic border colors */
+.border-CONFIRMED {
+	border-left-color: #0d6efd;
+}
+
+.border-PROCESSING {
+	border-left-color: #fd7e14;
+}
+
+.border-DISPATCHED {
+	border-left-color: #6f42c1;
+}
+
+.border-SHIPPED {
+	border-left-color: #0dcaf0;
+}
+
+.border-OUT_FOR_DELIVERY {
+	border-left-color: #ffc107;
+}
+
+.border-DELIVERED {
+	border-left-color: #198754;
+}
+
+.border-CANCELLED {
+	border-left-color: #dc3545;
+}
+
+.border-RETURNED {
+	border-left-color: #212529;
+}
+
+/* Image */
+.order-img {
+	max-height: 90px;
+	border-radius: 8px;
+}
+
+/* Product Name */
+.product-name {
+	font-size: 18px;
+	font-weight: 600;
+}
+
+/* Price */
+.product-price {
+	font-size: 19px;
+	font-weight: bold;
+}
+
+/* Badge */
+.badge-status {
+	padding: 7px 14px;
+	font-size: 13px;
+	border-radius: 20px;
+}
+
+/* Badge colors */
+.status-CONFIRMED {
+	background: #0d6efd;
+}
+
+.status-PROCESSING {
+	background: #fd7e14;
+}
+
+.status-DISPATCHED {
+	background: #6f42c1;
+}
+
+.status-SHIPPED {
+	background: #0dcaf0;
+}
+
+.status-OUT_FOR_DELIVERY {
+	background: #ffc107;
+	color: black;
+}
+
+.status-DELIVERED {
+	background: #198754;
+}
+
+.status-CANCELLED {
+	background: #dc3545;
+}
+
+.status-RETURNED {
+	background: #212529;
+}
+
+/* No orders */
+.no-orders {
+	background: white;
+	padding: 40px;
+	border-radius: 12px;
+	text-align: center;
+	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+</style>
+
+
+		<div class="orders-container">
+
+			<!-- Header -->
+			<div class="order-header">
+
+				<h4>My Orders</h4>
+
+				<p class="text-muted mb-0">Track, manage and view your order
+					history</p>
+
+			</div>
+
+
+			<!-- Orders -->
+			<div th:if="${orders != null and !orders.isEmpty()}">
+
+				<a th:each="order : ${orders}"
+					th:href="@{'/' + ${#strings.replace(order.product.productName,' ','-')} + '/details/' + ${order.id}}"
+					th:class="'order-card border-' + ${order.orderStatus.name()}">
+
+					<div class="row align-items-center">
+
+						<!-- Image -->
+						<div class="col-md-2 text-center">
+
+							<img
+								th:src="@{'/ProductImages/' + ${order.product.productImages[0]}}"
+								class="img-fluid order-img">
+
+						</div>
+
+
+						<!-- Info -->
+						<div class="col-md-7">
+
+							<div class="product-name" th:text="${order.product.productName}">
+							</div>
+
+							<p class="text-muted mb-1"
+								th:text="${#strings.abbreviate(order.product.productDescription,80)}">
+							</p>
+
+							Qty: <strong th:text="${order.quantity}"></strong> <br>
+
+							<div class="product-price">
+
+								₹ <span th:text="${order.finalAmount}"></span>
+
+							</div>
+
+						</div>
+
+
+						<!-- Status -->
+						<div class="col-md-3 text-end">
+
+							<span th:text="${order.orderStatus}"
+								th:class="'badge badge-status text-white status-' + ${order.orderStatus.name()}">
+
+							</span> <br>
+							<br> <small class="text-muted"> Click to view
+								details </small>
+
+						</div>
+
+					</div>
+
+				</a>
+
+			</div>
+
+
+			<!-- No orders -->
+			<div th:if="${orders == null or orders.isEmpty()}">
+
+				<div class="no-orders">
+
+					<h5>No Orders Found</h5>
+
+					<p class="text-muted">You haven't placed any orders yet.</p>
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</main>
+
+</body>
 </html>
