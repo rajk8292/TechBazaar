@@ -1,0 +1,162 @@
+<html th:replace="~{Admin/Adminbase::layout(~{::main})}">
+<body>
+
+	<main>
+
+		<div class="row">
+			<div class="col-sm-12">
+
+				<div class="card shadow">
+
+					<div class="card-header bg-primary">
+						<h5 class="text-center text-white m-0">Track Order History</h5>
+					</div>
+
+
+					<div class="card-body">
+
+						<div class="table-responsive">
+
+							<table class="table table-bordered table-hover align-middle">
+
+								<thead class="table-light">
+
+									<tr>
+										<th>Sr No</th>
+										<th>Order Id</th>
+										<th>Product Name</th>
+										<th>Image</th>
+										<th>Seller</th>
+										<th>Buyer</th>
+										<th>Delivery Address</th>
+										<th>Product Price</th>
+										<th>Quantity</th>
+										<th>Shipping Charge</th>
+										<th>Total Amount</th>
+										<th>Payment Status</th>
+										<th>Payment Method</th>
+										<th>Order Status</th>
+										<th>Order Date</th>
+									</tr>
+
+								</thead>
+
+
+								<tbody>
+
+									<tr th:each="order,srno : ${orders}">
+
+										<!-- Sr No -->
+										<td class="text-center" th:text="${srno.index+1}"></td>
+
+
+										<!-- Order Number -->
+										<td class="fw-bold text-primary"
+											th:text="${order.orderNumber}"></td>
+
+
+										<!-- Product Name -->
+										<td th:text="${order.product.productName}"></td>
+
+
+										<!-- Product Image -->
+										<td><img
+											th:src="@{'/ProductImages/' + ${order.product.productImages[0]}}"
+											width="60" height="60" style="object-fit: contain;"></td>
+
+
+										<!-- Seller Name + Contact -->
+										<td><span th:text="${order.seller.name}"></span> <br>
+											<small class="text-muted" th:text="${order.seller.contactNo}">
+										</small></td>
+
+
+										<!-- Buyer Name + Contact -->
+										<td><span th:text="${order.user.name}"></span> <br>
+											<small class="text-muted" th:text="${order.user.contactNo}">
+										</small></td>
+
+
+										<!-- Address -->
+										<td><span th:text="${order.address}"></span><br> <span
+											th:text="${order.city}"></span>, <span
+											th:text="${order.state}"></span> - <span
+											th:text="${order.pincode}"></span></td>
+
+
+										<!-- Price Section Flipkart Style -->
+										<td>
+											<!-- Original Price --> <del class="text-muted"
+												th:text="'₹' + ${order.price + order.discountAmount}">
+											</del>  <!-- Discount Badge --> <span
+											class="badge bg-success"
+											th:text="${#numbers.formatInteger((order.discountAmount * 100) / (order.price + order.discountAmount),1)} + '%'">
+										</span>  <!-- Final Price --> <span
+											class="fw-bold text-dark" th:text="'₹' + ${order.price}">
+										</span>
+
+										</td>
+
+
+										<!-- Quantity -->
+										<td th:text="${order.quantity}"></td>
+
+
+										<!-- Shipping -->
+										<td><span th:text="${order.shippingCharge}"
+											class="text-success fw-bold"> </span> <span
+											th:if="${order.shippingCharge > 0}"
+											th:text="'₹' + ${order.shippingCharge}"> </span></td>
+
+
+										<!-- Total Amount -->
+										<td class="fw-bold text-success"
+											th:text="'₹' + ${order.finalAmount}"></td>
+
+
+										<!-- Payment Status -->
+										<td><span class="badge bg-success"
+											th:if="${order.paymentStatus.name()=='SUCCESS'}"> PAID
+										</span> <span class="badge bg-warning text-dark"
+											th:if="${order.paymentStatus.name()=='PENDING'}">
+												PENDING </span> <span class="badge bg-danger"
+											th:if="${order.paymentStatus.name()=='FAILED'}">
+												FAILED </span> <span class="badge bg-info"
+											th:if="${order.paymentStatus.name()=='REFUNDED'}">
+												REFUNDED </span></td>
+
+
+										<!-- Payment Method -->
+										<td th:text="${order.paymentMethod}"></td>
+
+
+										<!-- Order Status -->
+										<td><span class="badge bg-primary"
+											th:text="${order.orderStatus}"> </span></td>
+
+
+										<!-- Order Date -->
+										<td
+											th:text="${#temporals.format(order.orderedAt,'dd MMM yyyy | hh:mm a')}">
+										</td>
+
+
+									</tr>
+
+								</tbody>
+
+							</table>
+
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+
+	</main>
+
+</body>
+</html>

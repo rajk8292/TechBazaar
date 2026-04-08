@@ -1,0 +1,50 @@
+<html th:replace="~{Admin/Adminbase::layout(~{::main})}">
+<body>
+<main>
+<div class="row">
+<div class="col-sm-12">
+<div class="card shadow">
+<div class="card-header bg-primary">
+<h4 class="text-center m-0 text-white">Manage Buyers</h4>
+</div>
+<div class="card-body">
+<div class="table-responsive">
+<table class="table table-bordered" id="example">
+<thead>
+<tr>
+<th>Sr No</th>
+<th>Name</th>
+<th>Gender</th>
+<th>Contact No</th>
+<th>E-mail</th>
+<th>Reg Date</th>
+<th>User Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr th:each="user,srno:${users}">
+<td th:text="${srno.index+1}"></td>
+<td th:text="${user.name}"></td>
+<td th:text="${user.gender}"></td>
+<td th:text="${user.contactNo}"></td>
+<td th:text="${user.email}"></td>
+<td th:text="${#temporals.format(user.regDate, 'dd-MMM-yyyy hh:mm a')}"></td>
+<td>
+<a th:href="@{'UpdateUserStatus/'+${user.id}}" onclick="return confirm('Are you sure want to update')" class="btn btn-sm" th:classappend="${user.userStatus.name() == 'UNBLOCKED' ? 'btn-primary' : 'btn-danger'}" th:text="${user.userStatus}"></a>
+</td>
+<td>
+
+   <a th:href="@{'DeleteUser/'+${user.id}}" onclick="return confirm('Are you sure want to delete')" class="btn btn-danger btn-sm">Delete</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body>
+</html>

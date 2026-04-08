@@ -1,0 +1,758 @@
+<html th:replace="~{base::layout(~{::main})}">
+
+<body>
+    <main>
+        <style>
+            :root {
+                --primary-color: #2874f0;
+                --buy-color: #fb641b;
+                --cart-color: #ff9f00;
+                --success-color: #388e3c;
+                --text-dark: #212121;
+                --text-muted: #878787;
+                --bg-light: #f1f3f6;
+                --border-radius: 12px;
+                --transition: all 0.3s ease;
+            }
+
+            body {
+                background-color: var(--bg-light);
+            }
+
+            .product-wrapper {
+                max-width: 1450px;
+                margin: 40px auto;
+                padding: 0 20px;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            }
+
+            /* Breadcrumb */
+            .breadcrumb {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 14px;
+                color: var(--text-muted);
+                margin-bottom: 20px;
+            }
+
+            .breadcrumb a {
+                color: var(--primary-color);
+                text-decoration: none;
+                font-weight: 500;
+            }
+
+            .breadcrumb a:hover {
+                text-decoration: underline;
+            }
+
+            /* Main Container - 3 Columns */
+            .product-card-main {
+                background: #fff;
+                border-radius: var(--border-radius);
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+                overflow: hidden;
+                display: grid;
+                grid-template-columns: minmax(350px, 1fr) 1.2fr 350px;
+                min-height: 700px;
+            }
+
+            /* =========================================
+               SECTION 1: LEFT - Media Gallery
+            ========================================= */
+            .media-gallery {
+                display: flex;
+                padding: 40px;
+                gap: 20px;
+                border-right: 1px solid #f0f0f0;
+                position: relative;
+            }
+
+            .thumbnails-container {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                width: 80px;
+                max-height: 600px;
+                overflow-y: auto;
+                scrollbar-width: none;
+            }
+
+            .thumbnails-container::-webkit-scrollbar {
+                display: none;
+            }
+
+            .thumbnails-container img {
+                width: 70px;
+                height: 70px;
+                object-fit: contain;
+                border: 2px solid transparent;
+                border-radius: 8px;
+                padding: 5px;
+                cursor: pointer;
+                transition: var(--transition);
+                background: #fff;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            }
+
+            .thumbnails-container img:hover,
+            .thumbnails-container img.active {
+                border-color: var(--primary-color);
+                box-shadow: 0 4px 8px rgba(40, 116, 240, 0.2);
+            }
+
+            .main-image-container {
+                flex: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: relative;
+                cursor: crosshair;
+                overflow: hidden;
+            }
+
+            .main-image-container img {
+                max-width: 100%;
+                height: 520px;
+                max-height: 600px;
+                object-fit: contain;
+                transition: transform 0.4s ease;
+            }
+
+            .main-image-container:hover img {
+                transform: scale(1.3);
+            }
+
+            /* Image Discount Badge */
+            .image-discount-badge {
+                position: absolute;
+                top: 20px;
+                left: 20px;
+                background-color: #ff3b3b;
+                color: #fff;
+                padding: 6px 16px;
+                border-radius: 20px;
+                font-weight: 700;
+                font-size: 15px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+                z-index: 10;
+                letter-spacing: 0.5px;
+            }
+
+            /* Wishlist Heart */
+            .wishlist-btn {
+                position: absolute;
+                top: 40px;
+                right: 40px;
+                background: #fff;
+                border: 1px solid #e0e0e0;
+                border-radius: 50%;
+                width: 44px;
+                height: 44px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                transition: var(--transition);
+                font-size: 20px;
+                color: #c2c2c2;
+            }
+
+            .wishlist-btn:hover {
+                color: #ff4343;
+                transform: scale(1.1);
+            }
+
+            /* =========================================
+               SECTION 2: MIDDLE - Specifications
+            ========================================= */
+            .product-specification {
+                padding: 40px;
+                display: flex;
+                flex-direction: column;
+                border-right: 1px solid #f0f0f0;
+            }
+
+            .brand-name {
+                color: var(--primary-color);
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-size: 13px;
+                margin-bottom: 8px;
+            }
+
+            .product-title {
+                font-size: 26px;
+                font-weight: 600;
+                color: var(--text-dark);
+                line-height: 1.3;
+                margin-bottom: 12px;
+            }
+
+            .rating-block {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 30px;
+            }
+
+            .rating-badge {
+                background-color: var(--success-color);
+                color: #fff;
+                padding: 4px 10px;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+
+            .rating-count {
+                color: var(--text-muted);
+                font-size: 13px;
+                font-weight: 500;
+            }
+
+            /* Highlights & Features */
+            .features-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+                margin-bottom: 35px;
+            }
+
+            .feature-card {
+                background: #fff;
+                border: 1px solid #e0e0e0;
+                padding: 15px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                transition: var(--transition);
+            }
+
+            .feature-card:hover {
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+                border-color: #d0d0d0;
+                transform: translateY(-2px);
+            }
+
+            .feature-icon {
+                font-size: 20px;
+                color: var(--primary-color);
+                background: rgba(40, 116, 240, 0.1);
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-shrink: 0;
+            }
+
+            .feature-text {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .feature-label {
+                font-size: 11px;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                font-weight: 600;
+            }
+
+            .feature-value {
+                font-size: 14px;
+                font-weight: 500;
+                color: var(--text-dark);
+                margin-top: 4px;
+            }
+
+            /* Description Block */
+            .description-block {
+                flex-grow: 1;
+            }
+
+            .section-title {
+                font-size: 16px;
+                font-weight: 600;
+                margin-bottom: 12px;
+                color: var(--text-dark);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .description-content {
+                font-size: 14px;
+                line-height: 1.6;
+                color: #4a4a4a;
+                white-space: pre-line;
+                background: #fafafa;
+                padding: 18px;
+                border-radius: 8px;
+                border: 1px dashed #e0e0e0;
+            }
+
+            /* =========================================
+               SECTION 3: RIGHT - Price & Action
+            ========================================= */
+            .price-action-section {
+                padding: 40px 30px;
+                background-color: #fafbfd;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .purchase-card {
+                background: #fff;
+                border: 1px solid #e0e0e0;
+                border-radius: 12px;
+                padding: 25px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            }
+
+            .price-title {
+                font-size: 14px;
+                font-weight: 600;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                margin-bottom: 10px;
+            }
+
+            .price-details {
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+                margin-bottom: 15px;
+            }
+
+            .final-price {
+                font-size: 38px;
+                font-weight: 700;
+                color: var(--text-dark);
+            }
+
+            .mrp-block {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .mrp-price {
+                font-size: 16px;
+                color: var(--text-muted);
+                text-decoration: line-through;
+            }
+
+            .taxes-info {
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 20px;
+            }
+
+            .divider {
+                height: 1px;
+                background-color: #e0e0e0;
+                margin: 20px 0;
+            }
+
+            /* Stock Indicator */
+            .stock-indicator {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 15px;
+                font-weight: 600;
+                margin-bottom: 25px;
+                padding: 10px;
+                background: rgba(0, 0, 0, 0.02);
+                border-radius: 8px;
+            }
+
+            .in-stock {
+                color: var(--success-color);
+            }
+
+            .stock-count {
+                color: var(--text-dark);
+                font-weight: 500;
+                font-size: 13px;
+                margin-left: auto;
+            }
+
+            .out-of-stock {
+                color: #d32f2f;
+            }
+
+            /* Action Buttons */
+            .action-container {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .action-btn {
+                width: 100%;
+                padding: 16px 20px;
+                font-size: 16px;
+                font-weight: 700;
+                border-radius: 8px;
+                border: none;
+                cursor: pointer;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+                transition: var(--transition);
+                color: #fff;
+            }
+
+            .action-btn:disabled {
+                background-color: #ccc;
+                cursor: not-allowed;
+                box-shadow: none !important;
+                transform: none !important;
+            }
+
+            .action-btn i {
+                font-size: 20px;
+            }
+
+            .btn-add-cart {
+                background-color: var(--cart-color);
+                box-shadow: 0 4px 6px rgba(255, 159, 0, 0.2);
+            }
+
+            .btn-add-cart:hover:not(:disabled) {
+                background-color: #f39800;
+                box-shadow: 0 6px 12px rgba(255, 159, 0, 0.3);
+                transform: translateY(-2px);
+            }
+
+            .btn-buy-now {
+                background-color: var(--buy-color);
+                box-shadow: 0 4px 6px rgba(251, 100, 27, 0.2);
+            }
+
+            .btn-buy-now:hover:not(:disabled) {
+                background-color: #ea5006;
+                box-shadow: 0 6px 12px rgba(251, 100, 27, 0.3);
+                transform: translateY(-2px);
+            }
+
+            /* Responsive Design */
+            @media (max-width: 1200px) {
+                .product-card-main {
+                    grid-template-columns: 1fr 1fr;
+                }
+
+                .price-action-section {
+                    grid-column: span 2;
+                    border-top: 1px solid #f0f0f0;
+                }
+
+                .purchase-card {
+                    max-width: 500px;
+                    margin: 0 auto;
+                    width: 100%;
+                }
+            }
+
+            @media (max-width: 992px) {
+                .product-card-main {
+                    grid-template-columns: 1fr;
+                }
+
+                .media-gallery,
+                .product-specification,
+                .price-action-section {
+                    border-right: none;
+                    grid-column: span 1;
+                }
+
+                .product-specification {
+                    border-top: 1px solid #f0f0f0;
+                }
+
+                .media-gallery {
+                    flex-direction: column-reverse;
+                    align-items: center;
+                }
+
+                .thumbnails-container {
+                    flex-direction: row;
+                    width: 100%;
+                    overflow-x: auto;
+                    padding-bottom: 10px;
+                    justify-content: center;
+                }
+            }
+
+            @media (max-width: 576px) {
+                .features-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+        <!-- Include FontAwesome for icons -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+        <div class="product-wrapper">
+
+            <div class="breadcrumb">
+                <a href="/"><i class="fa-solid fa-house"></i> Home</a> <span>&rsaquo;</span>
+                <a href="/products">Products</a> <span>&rsaquo;</span>
+                <a href="#" th:if="${product.category != null}" th:text="${product.category.categoryName}">Category</a>
+                <span th:if="${product.category != null}">&rsaquo;</span>
+                <span th:text="${product.productName}">Product Name</span>
+            </div>
+
+            <div class="product-card-main">
+
+                <!-- SECTION 1: MEDIA GALLERY -->
+                <div class="media-gallery">
+                    <div class="wishlist-btn" title="Add to Wishlist">
+                        <i class="fa-regular fa-heart"></i>
+                    </div>
+
+                    <div class="thumbnails-container">
+                        <img th:each="img,stat : ${product.productImages}" th:src="@{'/ProductImages/' + ${img}}"
+                            th:classappend="${stat.index==0}? 'active'" onclick="changeImage(this)" alt="Thumbnail">
+                    </div>
+
+                    <div class="main-image-container">
+                        <div class="image-discount-badge" th:if="${product.discount > 0}">
+                            <span th:text="${product.discount}"></span>% OFF
+                        </div>
+                        <img id="mainImage" th:src="@{'/ProductImages/' + ${product.productImages[0]}}"
+                            alt="Main Product Image">
+                    </div>
+                </div>
+
+                <!-- SECTION 2: PRODUCT SPECIFICATION -->
+                <div class="product-specification">
+                    <div class="brand-name" th:text="${product.brandName}">Brand Name</div>
+                    <h1 class="product-title" th:text="${product.productName}">Product Title Goes Here</h1>
+
+                    <div class="rating-block">
+                        <div class="rating-badge">
+                            4.5 <i class="fa-solid fa-star" style="font-size:11px;"></i>
+                        </div>
+                        <span class="rating-count">2,132 Ratings & 234 Reviews</span>
+                        <span style="color: var(--text-muted); margin-left: 10px;" th:if="${product.seller != null}">|
+                            Sold by: <strong style="color: var(--text-dark);"
+                                th:text="${product.seller.name}">Seller</strong></span>
+                    </div>
+
+                    <div class="features-grid">
+                        <div class="feature-card" th:if="${product.warranty}">
+                            <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                            <div class="feature-text">
+                                <span class="feature-label">Warranty</span>
+                                <span class="feature-value">
+                                    <span th:text="${product.warrantyDuration}"></span>
+                                    <span th:text="${product.warrantyUnit}"></span>
+                                </span>
+                                <span style="font-size: 11px; color: var(--text-muted); margin-top:2px;"
+                                    th:if="${product.warrantyTerms != null and !product.warrantyTerms.isEmpty()}">
+                                    <span th:text="${product.warrantyTerms}"></span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="feature-card" th:if="${product.returnAvailable}">
+                            <div class="feature-icon"><i class="fa-solid fa-arrow-rotate-left"></i></div>
+                            <div class="feature-text">
+                                <span class="feature-label">Return Policy</span>
+                                <span class="feature-value"><span th:text="${product.returnDays}"></span> Days
+                                    Return</span>
+                                <span style="font-size: 11px; color: var(--text-muted); margin-top:2px;"
+                                    th:if="${product.returnCondition != null and !product.returnCondition.isEmpty()}">
+                                    <span th:text="${product.returnCondition}"></span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="feature-card" th:if="${product.cancellationAllowed}">
+                            <div class="feature-icon"><i class="fa-solid fa-ban"></i></div>
+                            <div class="feature-text">
+                                <span class="feature-label">Cancellation</span>
+                                <span class="feature-value">Allowed before shipping</span>
+                            </div>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                            <div class="feature-text">
+                                <span class="feature-label">Delivery</span>
+                                <span class="feature-value">
+                                    <span th:if="${product.shippingCharge == 0}">Free Delivery</span>
+                                    <span th:unless="${product.shippingCharge == 0}">₹<span
+                                            th:text="${product.shippingCharge}"></span> Shipping</span>
+                                </span>
+                                <span style="font-size: 12px; color: var(--text-muted); margin-top:2px;">
+                                    Est. <span th:text="${product.minDeliveryDays}"></span> - <span
+                                        th:text="${product.maxDeliveryDays}"></span> Days
+                                    <span
+                                        th:if="${product.shippingType != null and !product.shippingType.isEmpty()}">via
+                                        <span th:text="${product.shippingType}"></span></span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="feature-card" th:if="${product.codAvailable}">
+                            <div class="feature-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
+                            <div class="feature-text">
+                                <span class="feature-label">Payment Options</span>
+                                <span class="feature-value">Cash on Delivery Available</span>
+                            </div>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fa-solid fa-medal"></i></div>
+                            <div class="feature-text">
+                                <span class="feature-label">Quality</span>
+                                <span class="feature-value">100% Original</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="description-block">
+                        <div class="section-title"><i class="fa-solid fa-list-ul"></i> Product Specifications & Details
+                        </div>
+                        <div class="description-content" th:text="${product.productDescription}">
+                            This is a detailed product description.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 3: PRICE & ACTION -->
+                <div class="price-action-section">
+                    <div class="purchase-card">
+
+                        <div class="price-title">Price Summary</div>
+
+                        <div class="price-details">
+                            <span class="final-price">₹<span th:text="${product.finalPrice}"></span></span>
+                            <div class="mrp-block">
+                                <span class="mrp-price">M.R.P: ₹<span th:text="${product.pricePerUnit}"></span></span>
+                            </div>
+                        </div>
+                        <div class="taxes-info">Inclusive of all taxes & free shipping</div>
+
+                        <div class="divider"></div>
+
+                        <div th:if="${product.quantityAvailable > 0}" class="stock-indicator in-stock">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>In Stock</span>
+                            <span class="stock-count">(<span th:text="${product.quantityAvailable}"></span> units
+                                left)</span>
+                        </div>
+                        <div th:unless="${product.quantityAvailable > 0}" class="stock-indicator out-of-stock">
+                            <i class="fa-solid fa-circle-xmark"></i> Out of Stock
+                        </div>
+
+                        <div class="action-container">
+                            <button class="action-btn btn-add-cart" th:onclick="addToCart('[[${product.id}]]')"
+                                th:disabled="${product.status.name()=='OUT_OF_STOCK'}">
+                                <i class="fa-solid fa-cart-shopping"></i> Add to Cart
+                            </button>
+
+                            <button class="action-btn btn-buy-now" th:onclick="buyNow('[[${product.id}]]')"
+                                th:disabled="${product.status.name()=='OUT_OF_STOCK'}">
+                                <i class="fa-solid fa-bolt"></i> Buy Now
+                            </button>
+                        </div>
+
+                        <div style="text-align:center; margin-top:15px; font-size:12px; color:#878787;">
+                            <i class="fa-solid fa-lock"></i> Secure Transaction
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <script>
+            function changeImage(element) {
+                // Add a small fade effect
+                const mainImg = document.getElementById("mainImage");
+                mainImg.style.opacity = 0.5;
+
+                setTimeout(() => {
+                    mainImg.src = element.src;
+                    mainImg.style.opacity = 1;
+                }, 150);
+
+                document.querySelectorAll(".thumbnails-container img")
+                    .forEach(img => img.classList.remove("active"));
+                element.classList.add("active");
+            }
+
+            // Add to wishlist toggle
+            document.querySelector('.wishlist-btn').addEventListener('click', function (e) {
+                e.preventDefault();
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('fa-regular')) {
+                    icon.classList.remove('fa-regular');
+                    icon.classList.add('fa-solid');
+                    icon.style.color = '#ff4343';
+                } else {
+                    icon.classList.remove('fa-solid');
+                    icon.classList.add('fa-regular');
+                    icon.style.color = '#c2c2c2';
+                }
+                // Add fetching logic for actual wishlist here
+            });
+
+            function addToCart(productId) {
+                const btn = document.querySelector('.btn-add-cart');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adding...';
+                btn.disabled = true;
+
+                fetch('/product/addToCart/' + productId, { method: "post" })
+                    .then(res => res.json())
+                    .then(data => {
+                        btn.innerHTML = '<i class="fa-solid fa-check"></i> Added To Cart';
+                        btn.style.backgroundColor = '#388e3c';
+
+                        setTimeout(() => {
+                            btn.innerHTML = originalText;
+                            btn.style.backgroundColor = '';
+                            btn.disabled = false;
+                        }, 2000);
+
+                        if (document.getElementById("cartItemCount")) {
+                            document.getElementById("cartItemCount").innerText = data.count;
+                        }
+
+                        // Show notification instead of alert if possible
+                        if (data.message) {
+                            // Optional: You can implement a toast notification here
+                            // alert(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        alert('Something went wrong. Please try again.');
+                    });
+            }
+
+            function buyNow(productId) {
+                window.location.href = "/checkout?productId=" + productId + "&qty=1";
+            }
+        </script>
+    </main>
+</body>
+
+</html>

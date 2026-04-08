@@ -1,0 +1,754 @@
+<html th:replace="~{Base::layout(~{::main})}">
+
+<head></head>
+
+<body>
+	<main>
+		<style>
+			/* Premium Checkout Redesign */
+			.checkout-title {
+				font-weight: 800;
+				font-size: 2rem;
+				color: #1e293b;
+				letter-spacing: -0.5px;
+				margin-bottom: 2rem;
+			}
+
+			.premium-card {
+				background: #ffffff;
+				border: none;
+				border-radius: 20px;
+				box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+				transition: all 0.3s ease;
+				overflow: hidden;
+			}
+
+			.premium-card:hover {
+				box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+			}
+
+			/* Address Section */
+			.address-container {
+				background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+				border: 1px solid #e2e8f0;
+				border-radius: 16px;
+				padding: 1.5rem;
+				position: relative;
+			}
+
+			.address-container::before {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 4px;
+				height: 100%;
+				background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+				border-radius: 16px 0 0 16px;
+			}
+
+			.badge-address {
+				background: #cbd5e1;
+				color: #334155;
+				font-size: 0.7rem;
+				font-weight: 700;
+				padding: 0.3rem 0.6rem;
+				border-radius: 6px;
+				letter-spacing: 0.5px;
+			}
+
+			.btn-change-address {
+				border: 2px solid #3b82f6;
+				color: #3b82f6;
+				font-weight: 600;
+				border-radius: 50px;
+				padding: 0.4rem 1.2rem;
+				transition: all 0.2s;
+				background: transparent;
+			}
+
+			.btn-change-address:hover {
+				background: #3b82f6;
+				color: white;
+				transform: translateY(-2px);
+			}
+
+			/* Cart Item */
+			.cart-item {
+				padding: 2rem 1.5rem;
+				border-bottom: 1px solid #f1f5f9;
+				transition: background-color 0.2s;
+			}
+
+			.cart-item:last-child {
+				border-bottom: none;
+			}
+
+			.cart-item:hover {
+				background-color: #f8fafc;
+			}
+
+			.product-img-box {
+				background: #f8fafc;
+				border-radius: 16px;
+				padding: 1.5rem;
+				height: 160px;
+				width: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.product-img-box img {
+				max-width: 100%;
+				max-height: 100%;
+				object-fit: contain;
+				transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+			}
+
+			.cart-item:hover .product-img-box img {
+				transform: scale(1.1);
+			}
+
+			/* Quantity Controller */
+			.qty-wrapper {
+				display: flex;
+				align-items: center;
+				background: #f1f5f9;
+				border-radius: 10px;
+				padding: 0.3rem;
+				box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+				margin-top: 1rem;
+				width: fit-content;
+				margin-left: auto;
+				margin-right: auto;
+			}
+
+			.btn-qty {
+				width: 32px;
+				height: 32px;
+				border: none;
+				background: transparent;
+				color: #475569;
+				border-radius: 8px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				transition: all 0.2s;
+			}
+
+			.btn-qty:hover {
+				background: #ffffff;
+				color: #0f172a;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+			}
+
+			.qty-val {
+				width: 40px;
+				text-align: center;
+				font-weight: 700;
+				color: #0f172a;
+			}
+
+			/* Product Texts */
+			.prod-title {
+				font-size: 1.25rem;
+				font-weight: 700;
+				color: #1e293b;
+				text-decoration: none;
+				transition: color 0.2s;
+				display: inline-block;
+				margin-bottom: 0.4rem;
+			}
+
+			.prod-title:hover {
+				color: #3b82f6;
+			}
+
+			.badge-brand {
+				background: #e2e8f0;
+				color: #475569;
+				font-weight: 500;
+				padding: 0.25rem 0.6rem;
+				border-radius: 6px;
+				font-size: 0.8rem;
+			}
+
+			.seller-text {
+				font-size: 0.85rem;
+				color: #64748b;
+			}
+
+			/* Pricing Prices */
+			.final-price-text {
+				font-size: 1.6rem;
+				font-weight: 800;
+				color: #0f172a;
+				letter-spacing: -0.5px;
+			}
+
+			.mrp-text {
+				color: #94a3b8;
+				font-size: 0.95rem;
+				font-weight: 500;
+			}
+
+			.discount-pill {
+				background: #ecfdf5;
+				color: #059669;
+				border: 1px solid #a7f3d0;
+				padding: 0.25rem 0.6rem;
+				border-radius: 50px;
+				font-weight: 700;
+				font-size: 0.75rem;
+				display: inline-flex;
+				align-items: center;
+				gap: 4px;
+			}
+
+			/* Delivery Info */
+			.delivery-box {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+				background: #f8fafc;
+				padding: 0.8rem 1.2rem;
+				border-radius: 12px;
+				border: 1px dashed #cbd5e1;
+				font-size: 0.9rem;
+				margin-bottom: 1.25rem;
+			}
+
+			/* Order Summary Card */
+			.summary-card {
+				background: #ffffff;
+				border: 1px solid #e2e8f0;
+				border-radius: 20px;
+				padding: 2rem;
+				position: sticky;
+				top: 2rem;
+				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+			}
+
+			.summary-row {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 1rem;
+				font-size: 1rem;
+				color: #475569;
+			}
+
+			.summary-row.total {
+				margin-top: 1.5rem;
+				padding-top: 1.5rem;
+				border-top: 2px dashed #e2e8f0;
+				font-size: 1.35rem;
+				font-weight: 800;
+				color: #0f172a;
+			}
+
+			.btn-place-order {
+				background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+				color: white;
+				font-weight: 700;
+				font-size: 1.1rem;
+				padding: 1rem;
+				border-radius: 12px;
+				border: none;
+				width: 100%;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+				transition: all 0.3s;
+				box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+			}
+
+			.btn-place-order:hover {
+				transform: translateY(-3px);
+				box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+				color: white;
+			}
+
+			/* Payment Selection */
+			.modern-pay-btn {
+				border-width: 2px;
+				border-radius: 16px;
+				transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+				background: #ffffff;
+				color: #475569;
+				border-color: #e2e8f0;
+				box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+			}
+
+			.modern-pay-btn:hover:not(.disabled) {
+				background: #f8fafc;
+				border-color: #94a3b8;
+				transform: translateY(-2px);
+				box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+			}
+
+			.btn-check:checked+.modern-pay-btn {
+				background: #eff6ff;
+				border-color: #3b82f6;
+				color: #1e293b;
+				box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
+				transform: translateY(-2px);
+			}
+
+			.btn-check:checked+.modern-pay-btn i {
+				color: #3b82f6;
+				transform: scale(1.1);
+			}
+
+			.modern-pay-btn i {
+				color: #94a3b8;
+				transition: all 0.3s ease;
+			}
+
+			/* Modal Adjustments */
+			.modern-modal .modal-content {
+				border: none;
+				border-radius: 20px;
+				box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+			}
+
+			.modern-modal .modal-header {
+				background: #f8fafc;
+				border-bottom: 1px solid #e2e8f0;
+				padding: 1.5rem;
+			}
+
+			.modern-modal .modal-title {
+				font-weight: 800;
+				color: #0f172a;
+			}
+
+			.address-item-row {
+				cursor: pointer;
+				transition: background 0.2s;
+			}
+
+			.address-item-row:hover {
+				background: #f8fafc;
+			}
+		</style>
+
+		<div class="container my-5">
+			<div class="row">
+				<div class="col-12">
+					<h1 class="checkout-title">Secured Checkout</h1>
+				</div>
+
+				<div class="col-lg-8">
+					<!-- Address Prompt / Selection -->
+					<div class="address-container mb-4 shadow-sm">
+						<div class="row align-items-center m-0">
+							<!-- Logged In & Has Address -->
+							<div class="col-sm-9 p-0" th:if="${session.loggedInUser != null && address!=null}">
+								<div class="d-flex align-items-start gap-3">
+									<div class="bg-white p-2 rounded-circle shadow-sm text-primary">
+										<i class="fa-solid fa-location-dot fs-5"></i>
+									</div>
+									<div>
+										<div class="d-flex align-items-center gap-2 mb-1">
+											<span class="text-muted">Deliver to:</span>
+											<strong class="text-dark fs-6"
+												th:text="${address.name + ', ' + address.pincode}">Rajkumar,
+												226301</strong>
+											<span th:text="${address.addressType}"
+												class="badge-address text-uppercase">WORK</span>
+										</div>
+										<p class="mb-0 text-secondary" style="font-size: 0.95rem; line-height: 1.4;"
+											th:text="${address.address}">Softpro House Sector J Jankipuram...</p>
+									</div>
+								</div>
+							</div>
+
+							<!-- Not Logged In or No Address -->
+							<div class="col-sm-9 p-0" th:if="${session.loggedInUser == null or address==null}">
+								<div class="d-flex align-items-center gap-3">
+									<div class="bg-white p-2 rounded-circle shadow-sm text-warning">
+										<i class="fa-solid fa-triangle-exclamation fs-5"></i>
+									</div>
+									<div>
+										<h6 class="mb-1 fw-bold text-dark">No Address Selected</h6>
+										<p class="mb-0 text-muted small">Please select an address from your saved
+											addresses to verify delivery.</p>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-sm-3 text-sm-end mt-3 mt-sm-0 p-0">
+								<button class="btn-change-address" data-bs-toggle="modal"
+									data-bs-target="#addressModal">Change</button>
+							</div>
+						</div>
+					</div>
+
+					<!-- Cart Items (Multiple) Container -->
+					<div class="premium-card mb-4" th:if="${cartItems != null}">
+						<div th:each="item : ${cartItems}" class="cart-item cart-row" th:attr="data-id=${item.id}">
+							<div class="row g-0">
+
+								<!-- Image & Qty -->
+								<div class="col-sm-3 col-md-3 d-flex flex-column justify-content-center">
+									<div class="product-img-box">
+										<img th:src="@{'ProductImages/'+${item.product.productImages[0]}}"
+											alt="Product Image">
+									</div>
+
+									<div class="qty-wrapper">
+										<button onclick="updateQuantity(this,-1)" class="btn-qty"
+											aria-label="Decrease"><i class="fa-solid fa-minus"></i></button>
+										<div class="qty-val qty" th:text="${item.quantity}">1</div>
+										<button onclick="updateQuantity(this,1)" class="btn-qty"
+											aria-label="Increase"><i class="fa-solid fa-plus"></i></button>
+									</div>
+								</div>
+
+								<!-- Product Details -->
+								<div class="col-sm-9 col-md-9 ps-sm-4 pt-4 pt-sm-0 d-flex flex-column">
+									<div class="d-flex justify-content-between align-items-start mb-2">
+										<div class="pe-3">
+											<span class="prod-title" th:text="${item.product.productName}">Premium
+												Product Title</span>
+											<div class="mb-2">
+												<span class="badge-brand me-2"><i
+														class="fa-solid fa-tag text-muted me-1"></i> <span
+														th:text="${item.product.brandName}">BrandName</span></span>
+												<span
+													class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary"
+													th:text="${item.product.category.categoryName}">Category</span>
+											</div>
+											<div class="seller-text mt-1">Sold by <strong class="text-dark"
+													th:text="${item.product.seller.name}">Seller Name</strong></div>
+										</div>
+
+										<div class="text-end" style="min-width: 120px;">
+											<div class="final-price-text">₹<span
+													th:text="${item.product.finalPrice * item.quantity}"
+													class="updated-final-price"></span></div>
+											<div th:if="${item.product.discount > 0}" class="mt-1">
+												<del class="mrp-text me-1">₹<span
+														th:text="${item.product.pricePerUnit * item.quantity}"
+														class="updated-unit-price"></span></del>
+												<div class="discount-pill mt-1">
+													<i class="fa-solid fa-fire-flame-curved"></i> <span
+														th:text="${item.product.discount}+'%'">10% Off</span>
+												</div>
+											</div>
+
+											<!-- Hidden variables for parsing -->
+											<input type="hidden" th:value="${item.product.pricePerUnit}"
+												class="price-per-unit" />
+											<input type="hidden" th:value="${item.product.finalPrice}"
+												class="final-price" />
+										</div>
+									</div>
+
+									<div class="mt-auto">
+										<div class="delivery-box w-100 mb-0 mt-3">
+											<i class="fa-solid fa-truck-fast text-success fs-5"></i>
+											<div>Delivery by <strong class="text-dark"
+													th:text="${#temporals.format( T(java.time.LocalDate).now().plusDays(item.product.maxDeliveryDays), 'EEE, MMM dd')}">Fri,
+													Feb 13</strong> <span class="text-muted mx-1">|</span> <span
+													class="text-success fw-medium"
+													th:if="${item.product.shippingCharge == 0}">Free
+													Delivery</span><span class="text-success fw-medium"
+													th:if="${item.product.shippingCharge > 0}"
+													th:text="'₹' + ${item.product.shippingCharge} + ' Shipping'"></span>
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+
+					<!-- Single Item (Buy Now) Container -->
+					<div class="premium-card mb-4" id="MainItemCard" th:if="${isBuyNow}">
+						<div class="cart-item">
+							<div class="row g-0">
+
+								<!-- Image & Qty -->
+								<div class="col-sm-3 col-md-3 d-flex flex-column justify-content-center">
+									<div class="product-img-box">
+										<img th:src="@{'ProductImages/'+${buyNowProduct.productImages[0]}}"
+											alt="Product Image">
+									</div>
+
+									<div class="qty-wrapper">
+										<button onclick="updateBuyNowQuantity(-1)" class="btn-qty"
+											aria-label="Decrease"><i class="fa-solid fa-minus"></i></button>
+										<div class="qty-val qty" id="buyNowQuantity" th:text="${quantity}">1</div>
+										<button onclick="updateBuyNowQuantity(1)" class="btn-qty"
+											aria-label="Increase"><i class="fa-solid fa-plus"></i></button>
+									</div>
+								</div>
+
+								<!-- Product Details -->
+								<div class="col-sm-9 col-md-9 ps-sm-4 pt-4 pt-sm-0 d-flex flex-column">
+									<div class="d-flex justify-content-between align-items-start mb-2">
+										<div class="pe-3">
+											<span class="prod-title" th:text="${buyNowProduct.productName}">Premium
+												Product Title</span>
+											<div class="mb-2">
+												<span class="badge-brand me-2"><i
+														class="fa-solid fa-tag text-muted me-1"></i> <span
+														th:text="${buyNowProduct.brandName}">BrandName</span></span>
+												<span
+													class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary"
+													th:text="${buyNowProduct.category.categoryName}">Category</span>
+											</div>
+											<div class="seller-text mt-1">Sold by <strong class="text-dark"
+													th:text="${buyNowProduct.seller.name}">Seller Name</strong></div>
+										</div>
+
+										<div class="text-end" style="min-width: 120px;">
+											<div class="final-price-text">₹<span
+													th:text="${buyNowProduct.finalPrice * quantity}"
+													id="update-final-price"></span></div>
+											<div th:if="${buyNowProduct.discount > 0}" class="mt-1">
+												<del class="mrp-text me-1">₹<span
+														th:text="${buyNowProduct.pricePerUnit * quantity}"
+														id="update-unit-price"></span></del>
+												<div class="discount-pill mt-1">
+													<i class="fa-solid fa-fire-flame-curved"></i> <span
+														th:text="${buyNowProduct.discount}+'%'">10% Off</span>
+												</div>
+											</div>
+
+											<!-- Hidden variables for parsing -->
+											<input type="hidden" th:value="${buyNowProduct.pricePerUnit}"
+												id="price-per-unit" />
+											<input type="hidden" th:value="${buyNowProduct.finalPrice}"
+												id="final-price" />
+										</div>
+									</div>
+
+									<div class="mt-auto">
+										<div class="delivery-box w-100 mb-0 mt-3">
+											<i class="fa-solid fa-truck-fast text-success fs-5"></i>
+											<div>Delivery by <strong class="text-dark"
+													th:text="${#temporals.format( T(java.time.LocalDate).now().plusDays(buyNowProduct.maxDeliveryDays), 'EEE, MMM dd')}">Fri,
+													Feb 13</strong> <span class="text-muted mx-1">|</span> <span
+													class="text-success fw-medium" th:if="${shippingCharge == 0}">Free
+													Delivery</span><span class="text-success fw-medium"
+													th:if="${shippingCharge > 0}"
+													th:text="'₹' + ${shippingCharge} + ' Shipping'"></span></div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+				<!-- RIGHT COLUMN: Order Summary -->
+				<div class="col-lg-4 mt-4 mt-lg-0">
+					<div class="summary-card">
+						<h4 class="fw-bold text-dark mb-4 pb-3 border-bottom">Price Details</h4>
+
+						<div class="summary-row">
+							<span>Total MRP</span>
+							<strong class="text-dark" id="totalPrice" th:text="'₹'+${totalPrice}">₹0</strong>
+						</div>
+
+						<div class="summary-row">
+							<span>Discount on MRP</span>
+							<strong class="text-success" id="discount"
+								th:text="'-₹' + ${totalPrice - finalPrice}">-₹0</strong>
+						</div>
+
+						<div class="summary-row">
+							<span>Coupons Applied</span>
+							<strong class="text-success">0.0</strong>
+						</div>
+
+						<div class="summary-row">
+							<span>Delivery Charges</span>
+							<strong class="text-success" id="shippingChargeContainer">
+								<span th:if="${shippingCharge == 0}" id="shippingChargeText">Free</span>
+								<span th:if="${shippingCharge > 0}">₹<span id="shippingCharge"
+										th:text="${shippingCharge}">0</span></span>
+							</strong>
+						</div>
+
+						<div class="summary-row total">
+							<span>Total Amount to Pay</span>
+							<span id="finalPrice" th:text="'₹' + ${finalPrice + shippingCharge}">₹0</span>
+						</div>
+
+						<!-- Payment Method Form -->
+						<form id="orderForm" class="mt-4 pt-3 border-top">
+							<h5 class="fw-bold mb-3 text-dark">Payment Mode</h5>
+
+							<input type="hidden" th:if="${isBuyNow}" th:value="${buyNowProduct.id}" name="productId">
+							<input type="hidden" th:if="${isBuyNow}" th:value="${quantity}" name="qty" id="qty">
+
+							<div class="d-flex gap-2 w-100 mb-3 payment-modes">
+								<!-- COD Option -->
+								<div class="flex-fill" th:if="${cod}">
+									<input type="radio" class="btn-check" id="cod" value="COD" name="paymentMethod"
+										required>
+									<label
+										class="btn modern-pay-btn d-flex flex-column align-items-center justify-content-center p-3 w-100 h-100"
+										for="cod">
+										<i class="fa-solid fa-money-bill-wave fs-3 mb-2"></i>
+										<span class="fw-bold small">Cash on Delivery</span>
+										<span class="text-muted smaller mt-1" style="font-size: 0.65rem;">Pay at
+											doorstep</span>
+									</label>
+								</div>
+
+								<!-- COD Not Available Alert -->
+								<div class="flex-fill" th:if="${cod != true}">
+									<div
+										class="modern-pay-btn disabled d-flex flex-column align-items-center justify-content-center p-3 opacity-50 bg-light w-100 h-100">
+										<i class="fa-solid fa-ban fs-3 mb-2 text-danger"></i>
+										<span class="fw-bold small text-danger">COD Unavailable</span>
+										<span class="text-muted smaller mt-1" style="font-size: 0.65rem;">For this
+											amount</span>
+									</div>
+								</div>
+
+								<!-- Online Option -->
+								<div class="flex-fill">
+									<input type="radio" class="btn-check" id="online" value="ONLINE"
+										name="paymentMethod" required>
+									<label
+										class="btn modern-pay-btn d-flex flex-column align-items-center justify-content-center p-3 w-100 h-100"
+										for="online">
+										<i class="fa-solid fa-credit-card fs-3 mb-2"></i>
+										<span class="fw-bold small">Online Payment</span>
+										<span class="text-muted smaller mt-1" style="font-size: 0.65rem;">UPI, Cards,
+											Net</span>
+									</label>
+								</div>
+							</div>
+
+							<button type="button" onclick="placeOrder()" class="btn btn-place-order mt-3">
+								<i class="fa-solid fa-lock me-2"></i> Place Order
+							</button>
+						</form>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Address Modal (Modernized) -->
+		<div class="modal fade modern-modal" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title fs-4" id="addressModalLabel">Select Delivery Address</h5>
+						<button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"
+							aria-label="Close"></button>
+					</div>
+
+					<!-- IF NULL / GUEST -->
+					<div class="modal-body p-4 p-md-5" th:if="${session.loggedInUser == null}">
+						<div class="row align-items-center mb-5">
+							<div class="col-md-3 text-center mb-3 mb-md-0">
+								<div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex justify-content-center align-items-center"
+									style="width: 100px; height: 100px;">
+									<i class="fa-solid fa-user-lock fs-1 text-primary"></i>
+								</div>
+							</div>
+							<div class="col-md-9 text-center text-md-start">
+								<h4 class="fw-bold text-dark mb-2">Login to view saved addresses</h4>
+								<p class="text-muted mb-0">Securely access your saved addresses for a faster checkout
+									experience.</p>
+								<div class="mt-3">
+									<a href="/Login" class="btn btn-primary rounded-pill px-4 fw-bold">Login /
+										Register</a>
+								</div>
+							</div>
+						</div>
+
+						<div class="bg-light p-4 rounded-4 border border-secondary-subtle">
+							<h6 class="fw-bold mb-3"><i
+									class="fa-solid fa-location-crosshairs text-primary me-2"></i>Check Delivery
+								Availability</h6>
+							<div class="input-group input-group-lg shadow-sm">
+								<input type="text" class="form-control border-0"
+									placeholder="Enter Pincode (e.g. 110001)">
+								<button class="btn btn-dark px-4 fw-bold" type="button">Check</button>
+							</div>
+							<div class="mt-3 text-start">
+								<a href="#" class="text-decoration-none fw-bold text-primary"><i
+										class="fa-solid fa-location-arrow me-1"></i> Use my current location</a>
+							</div>
+						</div>
+					</div>
+
+					<!-- IF LOGGED IN -->
+					<div class="modal-body p-0" th:if="${session.loggedInUser != null}">
+						<form action="/ChangeAddress" method="post">
+							<div class="address-scroll-area" style="max-height: 450px; overflow-y: auto;">
+								<table class="table mb-0">
+									<tbody>
+										<tr th:each="add : ${addresses}" class="address-item-row"
+											onclick="this.querySelector('input[type=radio]').click()">
+											<td class="p-4 border-bottom">
+												<div class="form-check d-flex gap-3 align-items-start m-0">
+													<input type="radio" th:checked="${add.active}" name="addressId"
+														th:value="${add.id}" th:id="'addressId_' + ${add.id}"
+														class="form-check-input mt-1 shadow-none"
+														style="transform: scale(1.3); cursor: pointer;">
+													<label class="form-check-label w-100"
+														th:for="'addressId_' + ${add.id}" style="cursor: pointer;">
+														<div class="d-flex align-items-center gap-2 mb-2">
+															<span class="fw-bold text-dark fs-5"
+																th:text="${add.name}">Name</span>
+															<span
+																class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle rounded-pill mx-2"
+																th:text="${add.addressType}">HOME</span>
+															<span class="fw-bold text-dark ms-auto"
+																th:text="${add.pincode}">123456</span>
+														</div>
+														<p class="text-secondary mb-0"
+															style="font-size: 1rem; line-height: 1.5;"
+															th:text="${add.address}">Full Address...</p>
+													</label>
+												</div>
+											</td>
+										</tr>
+										<tr th:if="${addresses == null or addresses.size() == 0}">
+											<td class="p-5 text-center">
+												<div class="bg-light rounded-circle d-inline-flex justify-content-center align-items-center mb-3"
+													style="width: 80px; height: 80px;">
+													<i class="fa-regular fa-map fs-2 text-muted"></i>
+												</div>
+												<h5 class="fw-bold text-dark">No Addresses Found</h5>
+												<p class="text-muted">You haven't saved any addresses yet.</p>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+							<div
+								class="modal-footer bg-light border-top-0 p-4 d-flex justify-content-between align-items-center">
+								<a href="/User/ManageAddress" class="btn btn-outline-primary rounded-pill px-4 fw-bold">
+									<i class="fa-solid fa-plus me-1"></i> Add New Address
+								</a>
+								<button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm py-2"
+									th:if="${addresses != null and addresses.size() > 0}">
+									Deliver Here
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</main>
+</body>
+
+</html>

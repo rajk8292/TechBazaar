@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{Admin/Adminbase::layout(~{::main})}">
+
+<body>
+    <main class="container-fluid py-4 px-4">
+        <style>
+            :root {
+                --admin-primary: #4361ee;
+                --admin-secondary: #3f37c9;
+                --admin-success: #10b981;
+                --admin-danger: #ef4444;
+                --admin-bg: #f8f9fa;
+                --admin-card-bg: #ffffff;
+                --admin-text-main: #2b2d42;
+                --admin-text-muted: #6c757d;
+                --admin-border: #e9ecef;
+            }
+
+            .admin-page-header {
+                margin-bottom: 2rem;
+            }
+
+            .admin-page-title {
+                font-size: 1.75rem;
+                font-weight: 700;
+                color: var(--admin-text-main);
+                margin: 0;
+            }
+
+            .admin-page-subtitle {
+                color: var(--admin-text-muted);
+                font-size: 0.95rem;
+                margin-top: 5px;
+            }
+
+            .admin-card {
+                background: var(--admin-card-bg);
+                border-radius: 16px;
+                border: 1px solid rgba(0, 0, 0, 0.05);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+                overflow: hidden;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .admin-card-header {
+                background: transparent;
+                border-bottom: 1px solid var(--admin-border);
+                padding: 1.5rem;
+            }
+
+            .admin-card-title {
+                font-weight: 700;
+                color: var(--admin-text-main);
+                margin: 0;
+                font-size: 1.15rem;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .admin-card-body {
+                padding: 1.5rem;
+                flex: 1;
+            }
+
+            /* Form Controls */
+            .admin-form-label {
+                font-weight: 600;
+                color: var(--admin-text-main);
+                font-size: 0.9rem;
+                margin-bottom: 8px;
+            }
+
+            .admin-form-control {
+                border-radius: 10px;
+                border: 1px solid #ced4da;
+                padding: 12px 16px;
+                font-size: 0.95rem;
+                background-color: #f8f9fa;
+                transition: all 0.3s ease;
+                width: 100%;
+            }
+
+            .admin-form-control:focus {
+                background-color: #fff;
+                border-color: var(--admin-primary);
+                box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.15);
+                outline: none;
+            }
+
+            .btn-admin-primary {
+                background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
+                color: white;
+                border: none;
+                border-radius: 10px;
+                padding: 14px 24px;
+                font-weight: 600;
+                letter-spacing: 0.5px;
+                transition: all 0.3s ease;
+                width: 100%;
+                margin-top: 10px;
+                font-size: 1rem;
+            }
+
+            .btn-admin-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 15px rgba(67, 97, 238, 0.25);
+                color: white;
+            }
+
+            /* Table Styles */
+            .admin-table-wrapper {
+                overflow-x: auto;
+                width: 100%;
+            }
+
+            .admin-table {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+                margin-bottom: 0;
+            }
+
+            .admin-table th {
+                font-weight: 600;
+                color: var(--admin-text-muted);
+                text-transform: uppercase;
+                font-size: 0.8rem;
+                letter-spacing: 1px;
+                padding: 1rem 1.5rem;
+                border-bottom: 1px solid var(--admin-border);
+                text-align: left;
+                background: rgba(0, 0, 0, 0.01);
+            }
+
+            .admin-table td {
+                padding: 1.2rem 1.5rem;
+                vertical-align: middle;
+                border-bottom: 1px solid var(--admin-border);
+                color: var(--admin-text-main);
+                font-size: 0.95rem;
+            }
+
+            .admin-table tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+            .admin-table tbody tr {
+                transition: background 0.2s ease;
+            }
+
+            .admin-table tbody tr:hover {
+                background-color: rgba(67, 97, 238, 0.03);
+            }
+
+            .category-name {
+                font-weight: 700;
+                color: var(--admin-text-main);
+                font-size: 1rem;
+            }
+
+            .category-desc {
+                color: var(--admin-text-muted);
+                font-size: 0.85rem;
+                max-width: 300px;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                line-height: 1.5;
+            }
+
+            /* Status Badge */
+            .status-btn {
+                padding: 6px 16px;
+                border-radius: 30px;
+                font-size: 0.85rem;
+                font-weight: 600;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                transition: all 0.3s ease;
+                white-space: nowrap;
+            }
+
+            .status-active {
+                background-color: rgba(16, 185, 129, 0.1);
+                color: var(--admin-success);
+                border: 1px solid rgba(16, 185, 129, 0.2);
+            }
+
+            .status-active:hover {
+                background-color: var(--admin-success);
+                color: white;
+                border-color: var(--admin-success);
+            }
+
+            .status-inactive {
+                background-color: rgba(239, 68, 68, 0.1);
+                color: var(--admin-danger);
+                border: 1px solid rgba(239, 68, 68, 0.2);
+            }
+
+            .status-inactive:hover {
+                background-color: var(--admin-danger);
+                color: white;
+                border-color: var(--admin-danger);
+            }
+
+            .empty-state {
+                padding: 3rem 1rem;
+                text-align: center;
+                color: var(--admin-text-muted);
+            }
+
+            .empty-state i {
+                font-size: 3rem;
+                opacity: 0.3;
+                margin-bottom: 1rem;
+            }
+        </style>
+
+        <!-- Header -->
+        <div class="admin-page-header">
+            <h1 class="admin-page-title">Category Management</h1>
+            <p class="admin-page-subtitle">Create, manage, and organize your product categories in one place.</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="row g-4">
+
+            <!-- Left Column: Add Category Form -->
+            <div class="col-xl-4 col-lg-5">
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h5 class="admin-card-title">
+                            <i class="fa-solid fa-folder-plus text-primary"></i> Add New Category
+                        </h5>
+                    </div>
+                    <div class="admin-card-body">
+                        <form method="post" th:object="${dto}">
+                            <div class="mb-4">
+                                <label class="admin-form-label">Category Name</label>
+                                <input th:field="*{categoryName}" type="text" class="admin-form-control"
+                                    placeholder="e.g. Laptops, Smartphones..." required>
+                            </div>
+                            <div class="mb-4">
+                                <label class="admin-form-label">Description</label>
+                                <textarea th:field="*{description}" class="admin-form-control" rows="5"
+                                    placeholder="Brief description of the category..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn-admin-primary">
+                                <i class="fa-solid fa-plus me-2"></i> Create Category
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Categories Table -->
+            <div class="col-xl-8 col-lg-7">
+                <div class="admin-card">
+                    <div class="admin-card-header d-flex justify-content-between align-items-center">
+                        <h5 class="admin-card-title">
+                            <i class="fa-solid fa-list-ul text-primary"></i> All Categories
+                        </h5>
+                        <span class="badge bg-primary rounded-pill py-2 px-3 shadow-sm"
+                            th:text="${categories.size()} + ' Total'">0 Total</span>
+                    </div>
+                    <div class="admin-card-body p-0">
+                        <div class="admin-table-wrapper">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th width="10%">#</th>
+                                        <th width="35%">Category Info</th>
+                                        <th width="35%">Description</th>
+                                        <th width="20%" class="text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="cate, srno : ${categories}">
+                                        <td>
+                                            <span class="text-muted fw-bold" th:text="${srno.index + 1}">1</span>
+                                        </td>
+                                        <td>
+                                            <div class="category-name" th:text="${cate.categoryName}">Laptops</div>
+                                        </td>
+                                        <td>
+                                            <div class="category-desc" th:text="${cate.description}">High performance
+                                                laptops.</div>
+                                        </td>
+                                        <td class="text-center">
+                                            <a th:href="@{'CategoryStatus/'+${cate.id}}"
+                                                onclick="return confirm('Do you want to toggle the status of this category?')"
+                                                th:class="${cate.active} ? 'status-btn status-active' : 'status-btn status-inactive'">
+                                                <i
+                                                    th:class="${cate.active} ? 'fa-solid fa-check-circle' : 'fa-solid fa-times-circle'"></i>
+                                                <span th:text="${cate.active} ? 'Active' : 'Inactive'">Active</span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <!-- Empty State -->
+                                    <tr th:if="${categories.empty}">
+                                        <td colspan="4">
+                                            <div class="empty-state">
+                                                <i class="fa-solid fa-folder-open"></i>
+                                                <p class="mb-0">No categories found. Start by adding one!</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

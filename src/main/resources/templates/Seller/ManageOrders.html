@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="~{Seller/Sellerbase::layout(~{::main})}">
+
+<body>
+
+  <main class="container-fluid py-3">
+
+    <div class="row">
+      <div class="col-sm-12">
+
+        <!-- Filter Form -->
+        <form method="get" class="d-flex w-50 mx-auto mb-3 gap-2">
+
+          <select class="form-control" name="selectedStatus">
+
+            <option value="">-----Select Order Status----</option>
+
+            <option th:each="status : ${orderStatus}" th:value="${status}" th:text="${status}">
+            </option>
+
+          </select>
+
+          <button type="submit" class="btn btn-danger">
+            Search Order
+          </button>
+
+        </form>
+
+
+        <!-- Card -->
+        <div class="card shadow">
+
+          <div class="card-header bg-primary text-center">
+
+            <h4 class="text-white m-0">
+              Track and Manage Your Order From Here
+            </h4>
+
+          </div>
+
+
+          <div class="card-body">
+
+            <div class="table-responsive">
+
+
+              <table class="table table-bordered " id="example">
+
+                <thead class="table-light">
+
+                  <tr>
+
+                    <th>Sr.No</th>
+                    <th>Order Id</th>
+                    <th>Product</th>
+                    <th>Image</th>
+                    <th>Buyer</th>
+                    <th>Contact No</th>
+                    <th>Email</th>
+                    <th>Product Price</th>
+                    <th>Discount</th>
+                    <th>Quantity</th>
+                    <th>Sub-Total</th>
+                    <th>Shipping Charge</th>
+                    <th>Total Amount</th>
+                    <th>Payment Method</th>
+                    <th>Payment Status</th>
+                    <th>Razorpay Order Id</th>
+                    <th>Transaction Id</th>
+                    <th>Shipping Details</th>
+                    <th>Order Status</th>
+                    <th>Order Date</th>
+                    <th>Delivery Date</th>
+					<th>Return Date</th>
+					<th>Cancelled Date</th>
+					<th>Action</th>
+                  </tr>
+
+                </thead>
+
+                <!-- empty tbody required -->
+                <tbody>
+                	<tr th:each="order, srno : ${orders}">
+                		<td th:text="${srno.index+1}" class="text-center"></td>
+                		<td th:text="${order.orderNumber}" class="text-primary fw-bold"></td>
+                		<td th:text="${order.product.productName}"></td>
+                		<td>
+                			<img alt="image not found" th:src="@{'/ProductImages/'+${order.product.productImages[0]}}" height="60px" width="60px">
+                		</td>
+                		<td th:text="${order.fullName}"></td>
+                		<td th:text="${order.phone}"></td>
+                		<td th:text="${order.user.email}"></td>
+                		<td>
+                			<del th:text="${'₹'+(order.price + order.discountAmount)}" class="text-danger"></del>
+                			<span th:text="${'₹'+order.price}" class="mx-2 text-success"></span>
+                		</td>
+                		<td>
+                			<span class="badge bg-primary text-white" th:text="${#numbers.formatInteger((order.discountAmount*100)/(order.price + order.discountAmount), 1)+'%'}"></span>
+                		</td>
+                		<td th:text="${order.quantity}" class="fw-bold text-center"></td>
+                		<td th:text="${'₹'+order.price*order.quantity}" class="fw-bold text-center"></td>
+                		<td th:text="${'₹'+order.shippingCharge}" class="fw-bold text-center"></td>
+                		<td th:text="${'₹'+order.price*order.quantity + order.shippingCharge}" class="text-center fw-bold"></td>
+                		<td th:text="${order.paymentMethod}" class="fw-bold text-center"></td>
+                		<td th:text="${order.paymentStatus}" class="fw-bold text-center"></td>
+                		<td th:text="${order.razorpayOrderId !=null ? order.razorpayOrderId : 'NA'}" class="fw-bold text-center"></td>
+                		<td th:text="${order.transactionId !=null ? order.transactionId : 'NA'}" class="fw-bold text-center"></td>
+                		<td>
+                			<span th:text="${order.pincode+', '+order.address}"></span> <br>
+                			<span th:text="${order.city+', '+order.state}"></span>
+                		</td>
+                		<td>
+                		
+                			<span th:text="${order.orderStatus}" class="badge bg-success text-center text-white"></span>
+                		</td>
+                		<td th:text="${#temporals.format(order.orderedAt, 'dd-MMM-yyyy | hh:mm a')}"></td>
+                		<td th:text="${order.deliveredAt != null ? #temporals.format(order.deliveredAt, 'dd-MMM-yyyy | hh:mm a') : 'NA'}" class="text-center fw-bold"></td>
+                		<td th:text="${order.returnedAt != null ? #temporals.format(order.returnedAt, 'dd-MMM-yyyy | hh:mm a') : 'NA'}" class="text-center fw-bold"></td>
+                		<td th:text="${order.cancelledAt != null ? #temporals.format(order.cancelledAt, 'dd-MMM-yyyy | hh:mm a') : 'NA'}" class="text-center fw-bold"></td>
+                		<td class="text-center">
+                			<a th:href="@{'CancelOrder/'+${order.id}}" th:if="${order.orderStatus.name()=='CONFIRMED'}" class="btn btn-danger btn-sm" onclick="return confirm('Are You Sure Want To Cancel Order')">Cancel</a>
+                			<a th:href="@{'UpdateOrderStatus/'+${order.id}}"  th:if="${order.orderStatus.name()=='CONFIRMED'}" class="btn btn-success btn-sm" >Confirm</a>
+                			
+                			<a th:href="@{'UpdateOrderStatus/'+${order.id}}" th:if="${order.orderStatus.name()=='PROCESSING'}" class="btn btn-warning btn-sm">Dispatched</a>
+                			<a th:href="@{'UpdateOrderStatus/'+${order.id}}" th:if="${order.orderStatus.name()=='DISPATCHED'}" class="btn btn-info btn-sm">Shipped</a>
+                			
+                			<a th:href="@{'UpdateOrderStatus/'+${order.id}}" th:if="${order.orderStatus.name()=='SHIPPED'}" class="btn btn-primary btn-sm">Out for delivery</a>
+                			<a th:href="@{'UpdateOrderStatus/'+${order.id}}" th:if="${order.orderStatus.name()=='OUT_FOR_DELIVERY'}" class="btn btn-secondary btn-sm">Deliver</a>
+                			<a th:href="@{'UpdateOrderStatus/'+${order.id}}" th:if="${order.orderStatus.name()=='RETURN_REQUESTED'}" class="btn btn-dark text-light btn-sm">Accept Return</a>
+                			
+                			<span th:if="${order.orderStatus.name()=='DELIVERED'}" >✅</span>
+                			<span th:if="${order.orderStatus.name()=='CANCELLED'}" >❌</span>
+                			<span th:if="${order.orderStatus.name()=='RETURNED'}" >Return Successful</span>
+                			
+                		</td>
+                	</tr>
+                </tbody>
+
+              </table>
+
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+      </div>
+    </div>
+
+  </main>
+
+</body>
+
+</html>

@@ -1,0 +1,38 @@
+1.100% compulsary seller registration
+2.admin->Manage Users(Buyers) need to complete for tomorrow class
+3.Make sure password 100% completed
+4.need to add category -> complete
+5.show product category and add category pages into table -> srno, categoryname,description,active status button
+6.Enquiry module complete ->
+
+create Enquiry Model ,
+create EnquiryRepository
+create EnquiryDto
+create EnquiryService
+create form to controller logic the save into database
+show the Enquiry Data to Admin --> Enquiry Menu
+
+--------------------------------------------------
+1. Create Update profilePic --> Seller
+2. Change password --> Seller
+
+-------------------------------------------
+complete change password
+view profile
+
+-------------------------------------------
+
+1. Complete All pages(Home, About, Contact, Orders, Products, ViewProduct)
+2. Complete my order page
+3.Apply String fromating with abbreviate --- for manage orders(seller)
+4. My order page ---> card --->Anchor tag ---> order tracking
+5.Complete change password ---> Admin, seller,user
+6.Edit User ----> By User ---> Edit profile
+-------------------------------------------------
+
+1.Registration template mail
+2.Order Confirmation after seller confirm order ---template mail
+3.order Cancellation(User/Seller)-- template mail
+4.Order successfull congratulation message ---template mail
+5.order Return message -- template mail
+6.Edit Address

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{Admin/Adminbase::layout(~{::main})}">
+<body>
+<main>
+
+<div class="container-fluid py-4">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark mb-0">Admin Dashboard</h3>
+            <small class="text-muted">Welcome back, Admin 👋</small>
+        </div>
+        <span class="badge bg-success p-2 px-3 rounded-pill shadow-sm">
+            Live Overview
+        </span>
+    </div>
+
+
+    <!-- ================= STAT CARDS ================= -->
+    <div class="row g-4">
+
+        <!-- CARD -->
+        <div class="col-xl-2 col-md-4 col-sm-6">
+            <div class="stat-card bg-gradient-success">
+                <div>
+                    <h6>Sellers</h6>
+                    <h3>2</h3>
+                </div>
+                <i class="la la-user"></i>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 col-sm-6">
+            <div class="stat-card bg-gradient-primary">
+                <div>
+                    <h6>Buyers</h6>
+                    <h3 th:text="${buyerCount}">0</h3>
+                </div>
+                <i class="la la-users"></i>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 col-sm-6">
+            <div class="stat-card bg-gradient-warning">
+                <div>
+                    <h6>Products</h6>
+                    <h3 th:text="${productCount}">0</h3>
+                </div>
+                <i class="la la-cube"></i>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 col-sm-6">
+            <div class="stat-card bg-gradient-danger">
+                <div>
+                    <h6>Orders</h6>
+                    <h3>5</h3>
+                </div>
+                <i class="la la-shopping-cart"></i>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 col-sm-6">
+            <div class="stat-card bg-gradient-info">
+                <div>
+                    <h6>Total Sales</h6>
+                    <h3>₹6</h3>
+                </div>
+                <i class="la la-money"></i>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 col-sm-6">
+            <div class="stat-card bg-gradient-secondary">
+                <div>
+                    <h6>Enquiries</h6>
+                    <h3 th:text="${enquiryCount}">0</h3>
+                </div>
+                <i class="la la-envelope"></i>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <!-- ================= ORDER STATUS ================= -->
+    <div class="row mt-5 g-4">
+
+        <div class="col-md-4">
+            <div class="status-card border-danger">
+                <h6>Cancelled Orders</h6>
+                <h2 class="text-danger" th:text="${cancelledOrders}">0</h2>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="status-card border-warning">
+                <h6>Pending Orders</h6>
+                <h2 class="text-warning" th:text="${confirmedOrders}">0</h2>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="status-card border-success">
+                <h6>Delivered Orders</h6>
+                <h2 class="text-success" th:text="${deliveredOrders}">0</h2>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <!-- ================= CHART + ENQUIRIES ================= -->
+    <div class="row mt-5 g-4">
+
+        <!-- Chart -->
+        <div class="col-lg-8">
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-header bg-white fw-bold border-0">
+                    Orders Overview
+                </div>
+                <div class="card-body">
+                    <canvas id="ordersChart" height="110"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Enquiries -->
+        <div class="col-lg-4">
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-header bg-white fw-bold border-0">
+                    Recent Enquiries
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush"
+                        style="max-height:300px; overflow-y:auto;">
+                        <li class="list-group-item"
+                            th:each="enq : ${recentEnquiries}">
+                            <strong th:text="${enq.name}">Name</strong>
+                            <small class="text-muted d-block"
+                                   th:text="${#temporals.format(enq.enquiryDate, 'dd MMM yyyy')}"></small>
+                            <span class="d-block text-truncate"
+                                  th:text="${enq.message}"></span>
+                        </li>
+                    </ul>
+                    <div class="text-center p-3">
+                        <a th:href="@{/Admin/Enquiry}"
+                           class="btn btn-sm btn-success rounded-pill px-4">
+                            View All
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ================= CHART JS ================= -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script th:inline="javascript">
+    const ctx = document.getElementById('ordersChart');
+    const orderMonths = [[${orderMonths}]];
+    const orderCounts = [[${orderCounts}]];
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: orderMonths,
+            datasets: [{
+                label: 'Orders',
+                data: orderCounts,
+                borderColor: '#198754',
+                backgroundColor: 'rgba(25,135,84,0.1)',
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true,
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+</script>
+
+
+
+<!-- ================= CUSTOM CSS ================= -->
+<style>
+
+.stat-card {
+    padding: 20px;
+    border-radius: 18px;
+    color: white;
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+.stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+.stat-card i {
+    font-size: 28px;
+    opacity: 0.8;
+}
+
+.status-card {
+    padding: 25px;
+    border-radius: 16px;
+    border-left: 6px solid;
+    background: white;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+.bg-gradient-success { background: linear-gradient(45deg,#28a745,#20c997); }
+.bg-gradient-primary { background: linear-gradient(45deg,#0d6efd,#6610f2); }
+.bg-gradient-warning { background: linear-gradient(45deg,#ffc107,#fd7e14); }
+.bg-gradient-danger { background: linear-gradient(45deg,#dc3545,#ff6b6b); }
+.bg-gradient-info { background: linear-gradient(45deg,#17a2b8,#0dcaf0); }
+.bg-gradient-secondary { background: linear-gradient(45deg,#6c757d,#adb5bd); }
+
+</style>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<html th:replace="~{Admin/Adminbase::layout(~{::main})}">
+<body>
+<main>
+<div class="row">
+<div class="col-sm-12">
+<div class="card shadow">
+<div class="card-header bg-primary">
+<h4 class="text-center m-0 text-white">Manage Sellers</h4>
+</div>
+<div class="card-body">
+<div class="table-responsive">
+<table class="table table-bordered" id="example">
+<thead>
+<tr>
+<th>Sr No</th>
+<th>ProfilePic</th>
+<th>Name</th>
+<th>Gender</th>
+<th>Contact No</th>
+<th>E-mail</th>
+<th>Address</th>
+<th>Adhaar No</th>
+<th>Pan Card</th>
+<th>GST no</th>
+<th>Reg Date</th>
+<th>User Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr th:each="seller,srno:${sellers}">
+<td th:text="${srno.index+1}"></td>
+<td class="text-center">
+<img th:src="${seller.profilePic != null} ? @{/uploads/{img}(img=${seller.profilePic})} : @{/assets/img/user_img.jpg}" alt="image not found"height="50"width="50"class="rounded-circle border border-3 border-warning profile-img"
+style="cursor: pointer;">
+
+</td>
+<td th:text="${seller.name}"></td>
+<td th:text="${seller.gender}"></td>
+<td th:text="${seller.contactNo}"></td>
+<td th:text="${seller.email}"></td>
+<td th:text="${seller.address}"></td>
+<td th:text="${seller.aadharNo}"></td>
+<td th:text="${seller.panCard}"></td>
+<td th:text="${seller.gstNo}"></td>
+<td th:text="${#temporals.format(seller.regDate, 'dd-MMM-yyyy hh:mm a')}"></td>
+<td>
+<a th:href="@{'UpdateUserStatus/'+${seller.id}}" onclick="return confirm('Are you sure want to update')" class="btn btn-sm" th:classappend="${seller.userStatus.name() == 'UNBLOCKED' ? 'btn-primary' : 'btn-danger'}" th:text="${seller.userStatus}"></a>
+</td>
+<td>
+   <a th:href="@{'DeleteUser/'+${seller.id}}" onclick="return confirm('Are you sure want to delete')" class="btn btn-danger btn-sm">Delete</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body>
+</html>
